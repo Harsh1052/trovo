@@ -41,6 +41,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Trovo needs your location to guide you to hunt checkpoints and verify that you've arrived at each clue.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Trovo needs camera access so you can take photos at checkpoint locations during a hunt.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
