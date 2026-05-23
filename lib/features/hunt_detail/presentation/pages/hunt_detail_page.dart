@@ -72,7 +72,7 @@ class _HuntDetailContent extends StatelessWidget {
               title: Text(hunt.title,
                   style: AppTypography.titleMedium
                       .copyWith(color: Colors.white)),
-              background: HMCachedImage(url: hunt.coverImageUrl!),
+              background: HMCachedImage(url: hunt.coverImageUrl),
             ),
           ),
           SliverToBoxAdapter(
@@ -113,7 +113,7 @@ class _HuntDetailContent extends StatelessWidget {
                       color: Colors.white),
                 )
               : HMButton.secondary(
-                  label: 'Unlock for \$${hunt.price!.toStringAsFixed(2)}',
+                  label: 'Unlock for \$${(hunt.price / 100).toStringAsFixed(2)}',
                   onPressed: () => context.push(RouteNames.paywall),
                 ),
         ),
