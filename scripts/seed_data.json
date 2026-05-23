@@ -1,0 +1,236 @@
+{
+  "_notes": {
+    "field_mapping": "All field names match the Dart model toFirestore() output exactly.",
+    "timestamps": "ISO-8601 strings — seed_firestore.js converts them to Firestore Timestamps.",
+    "hunt_ids": ["panchvati_garden", "sula_vineyards"],
+    "checkpoint_type_values": ["clue", "photo_task"],
+    "status_values": ["in_progress", "completed", "abandoned"]
+  },
+
+  "hunts": [
+    {
+      "_docId": "panchvati_garden",
+      "title": "Panchvati Heritage Trail",
+      "description": "Follow the footsteps of the Ramayana along the sacred ghats and temples of ancient Panchvati. Solve eight riddles hidden across Nashik's most storied quarter — from the holy waters of Ramkund to the arched bridge above the Godavari.",
+      "city": "Nashik",
+      "gardenName": "Panchvati",
+      "difficulty": "easy",
+      "durationMinutes": 90,
+      "checkpointCount": 8,
+      "isFree": true,
+      "price": 0,
+      "coverImageUrl": "",
+      "startLatitude": 20.003610,
+      "startLongitude": 73.776840,
+      "isActive": true,
+      "createdAt": "2024-10-01T08:00:00.000Z"
+    },
+    {
+      "_docId": "sula_vineyards",
+      "title": "Sula Vintage Code",
+      "description": "Uncover the secrets of Nashik's wine country across the sun-drenched vineyards and cellar rooms of Sula. From barrel to bottle, from gate to hilltop — can you crack the vintage code before the sun sets over Gangapur Dam?",
+      "city": "Nashik",
+      "gardenName": "Sula Vineyards",
+      "difficulty": "medium",
+      "durationMinutes": 75,
+      "checkpointCount": 6,
+      "isFree": false,
+      "price": 29900,
+      "coverImageUrl": "",
+      "startLatitude": 20.006500,
+      "startLongitude": 73.698000,
+      "isActive": true,
+      "createdAt": "2024-10-05T09:00:00.000Z"
+    }
+  ],
+
+  "checkpoints": {
+    "panchvati_garden": [
+      {
+        "_docId": "pg_cp_01",
+        "huntId": "panchvati_garden",
+        "orderIndex": 0,
+        "clueText": "I am a sacred pool carved by the Godavari herself, where pilgrims immerse the ashes of loved ones to grant them moksha. The river that feeds me is the second longest in peninsular India. What is her name?",
+        "hintText": "Her name means 'giver of cows' in Sanskrit. She is called the Ganges of the South.",
+        "latitude": 20.003610,
+        "longitude": 73.776840,
+        "type": "clue",
+        "answer": "godavari",
+        "unlockRadius": 20,
+        "funFact": "Ramkund never dries up even in Nashik's harshest summers. Ancient texts say the tank was sanctified when Ram, Sita, and Lakshmana bathed here before the coronation at Ayodhya."
+      },
+      {
+        "_docId": "pg_cp_02",
+        "huntId": "panchvati_garden",
+        "orderIndex": 1,
+        "clueText": "Descend below the earth to where a princess sheltered in exile. An oil lamp burns day and night inside. Photograph yourself standing at the entrance of this cave — where Sita is said to have lived during the fourteen years in the forest.",
+        "hintText": "The cave entrance is behind the main temple complex; look for narrow steps going downward into the rock.",
+        "latitude": 19.997910,
+        "longitude": 73.776080,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 25,
+        "funFact": "The cave narrows to less than a metre at its deepest point. Legend holds that Surpanakha, Ravana's sister, disguised herself as a beautiful woman and approached Ram near this cave."
+      },
+      {
+        "_docId": "pg_cp_03",
+        "huntId": "panchvati_garden",
+        "orderIndex": 2,
+        "clueText": "Built in 1782 by Sardar Rangarao Odhekar, my walls and my idol share a single striking colour — the darker end of the spectrum. Dr. B.R. Ambedkar led 15,000 people to my gates in 1930. What colour is hidden in my name?",
+        "hintText": "'Kala' is the Marathi and Sanskrit word for this colour. The full name means 'Black Ram'.",
+        "latitude": 20.001210,
+        "longitude": 73.777500,
+        "type": "clue",
+        "answer": "black",
+        "unlockRadius": 20,
+        "funFact": "On 2 March 1930, Dr. B.R. Ambedkar led 15,000 Dalits in a satyagraha at Kalaram Temple demanding the right to worship inside."
+      },
+      {
+        "_docId": "pg_cp_04",
+        "huntId": "panchvati_garden",
+        "orderIndex": 3,
+        "clueText": "The Goddess of the Deccan flows from Trimbakeshwar, 80 km north, and washes these very steps. Every twelve years, tens of millions gather here for the largest human assembly on Earth. What is this sacred bathing festival called?",
+        "hintText": "This festival rotates between Nashik, Haridwar, Ujjain, and Prayagraj every three years.",
+        "latitude": 20.004000,
+        "longitude": 73.775800,
+        "type": "clue",
+        "answer": "kumbh mela",
+        "unlockRadius": 20,
+        "funFact": "The Nashik Kumbh Mela (Simhastha) occurs when Jupiter enters Leo, roughly every twelve years. The 2015 edition drew over 30 million pilgrims."
+      },
+      {
+        "_docId": "pg_cp_05",
+        "huntId": "panchvati_garden",
+        "orderIndex": 4,
+        "clueText": "This entire area takes its name from me. Five of my kind once stood in a circle marking where Ram built his forest hut. My aerial roots drop from branches and root into new trunks; a single one of me can become an entire forest. What tree am I?",
+        "hintText": "Panch means five, Vati means this specific tree. It is also the national tree of India.",
+        "latitude": 19.999010,
+        "longitude": 73.777030,
+        "type": "clue",
+        "answer": "banyan",
+        "unlockRadius": 20,
+        "funFact": "The Great Banyan Tree in Kolkata covers 18,918 sq metres and is considered a single organism despite having over 3,300 aerial root pillars."
+      },
+      {
+        "_docId": "pg_cp_06",
+        "huntId": "panchvati_garden",
+        "orderIndex": 5,
+        "clueText": "The forest of penance — sage Agastya once meditated in this hillside hermitage, and the cave at its heart still holds an eternal lamp. Photograph the stone-framed cave entrance with the lamp visible inside.",
+        "hintText": "The cave is behind the main ashram hall; take the narrow footpath on the left side of the compound.",
+        "latitude": 20.005810,
+        "longitude": 73.774350,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 25,
+        "funFact": "Tapovan is one of the fourteen sacred forests (aranya) mentioned in the Mahabharata."
+      },
+      {
+        "_docId": "pg_cp_07",
+        "huntId": "panchvati_garden",
+        "orderIndex": 6,
+        "clueText": "My name fuses 'beautiful' with a name for Vishnu, the preserver of the universe. Built on the riverbank by the Peshwas in the 18th century, my deity holds a conch and a discus and has never been locked since consecration. What is my full name?",
+        "hintText": "'Sundar' means beautiful in Sanskrit. The second word is an eight-letter name for Vishnu meaning 'he who moves on water'.",
+        "latitude": 20.004910,
+        "longitude": 73.778500,
+        "type": "clue",
+        "answer": "sundar narayan",
+        "unlockRadius": 20,
+        "funFact": "The Peshwa-era temple is gilded in gold leaf that devotees replenish each Diwali."
+      },
+      {
+        "_docId": "pg_cp_08",
+        "huntId": "panchvati_garden",
+        "orderIndex": 7,
+        "clueText": "From the midpoint of this old stone bridge you can see the Godavari bend in both directions. Count the stone arches below you that span the river — that number is your final answer to complete the trail.",
+        "hintText": "Stand at the centre of the bridge and look both upstream and downstream. Count each distinct arch span you can see beneath the roadway.",
+        "latitude": 20.006010,
+        "longitude": 73.775100,
+        "type": "clue",
+        "answer": "five",
+        "unlockRadius": 30,
+        "funFact": "The Godavari at Nashik drains a basin of 312,812 sq km — larger than the entire United Kingdom."
+      }
+    ],
+
+    "sula_vineyards": [
+      {
+        "_docId": "sv_cp_01",
+        "huntId": "sula_vineyards",
+        "orderIndex": 0,
+        "clueText": "Before the vines, before the barrel, there was one man's dream and one valley's volcanic soil. The founder left Silicon Valley in the late 1990s to plant grapes here, pioneering Indian fine wine. What is his first name?",
+        "hintText": "His surname is Samant. He studied at Stanford University before returning to India.",
+        "latitude": 20.006500,
+        "longitude": 73.698000,
+        "type": "clue",
+        "answer": "rajeev",
+        "unlockRadius": 20,
+        "funFact": "Rajeev Samant founded Sula Vineyards in 1999 after discovering that Nashik's volcanic basalt soil and 560m elevation was ideal for viticulture."
+      },
+      {
+        "_docId": "sv_cp_02",
+        "huntId": "sula_vineyards",
+        "orderIndex": 1,
+        "clueText": "The white grape that put Indian wine on the world map originated in France's Loire Valley and has been Sula's flagship since day one. It earns international medals for its high acidity and honey-floral notes. Name this variety — two words, first begins with C.",
+        "hintText": "It is one of France's most versatile white grapes. The first word rhymes with 'renew'.",
+        "latitude": 20.005500,
+        "longitude": 73.699200,
+        "type": "clue",
+        "answer": "chenin blanc",
+        "unlockRadius": 20,
+        "funFact": "Sula's Chenin Blanc was the first Indian wine to score above 80 points in major international wine guides."
+      },
+      {
+        "_docId": "sv_cp_03",
+        "huntId": "sula_vineyards",
+        "orderIndex": 2,
+        "clueText": "Step into the rows where the dark-skinned Shiraz grape ripens under the Sahyadri sun. Photograph yourself with both arms outstretched, touching the trellis wire on either side.",
+        "hintText": "Walk into any row in the Shiraz block. The main trellis wire is the highest of the two horizontal wires on each post.",
+        "latitude": 20.004800,
+        "longitude": 73.700100,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 25,
+        "funFact": "Nashik's basalt-rich volcanic Deccan Trap soil gives Sula's Shiraz an earthy mineral character unlike any European equivalent."
+      },
+      {
+        "_docId": "sv_cp_04",
+        "huntId": "sula_vineyards",
+        "orderIndex": 3,
+        "clueText": "Built at the water's edge, the open-air bar here is named for beginnings. Behind it, a dam holds back the reservoir that moderates Nashik's vine-friendly microclimate. The dam and the village where Sula was born share the same name. What is it?",
+        "hintText": "The dam is visible from the bar terrace. Its name is also a common Sanskrit girl's name.",
+        "latitude": 20.007000,
+        "longitude": 73.697500,
+        "type": "clue",
+        "answer": "gangapur",
+        "unlockRadius": 20,
+        "funFact": "Gangapur Dam was built in 1967 and supplies 40% of Nashik city's drinking water."
+      },
+      {
+        "_docId": "sv_cp_05",
+        "huntId": "sula_vineyards",
+        "orderIndex": 4,
+        "clueText": "In the cellar's cool darkness, French oak slowly transforms grape juice into legend. Each barrel holds exactly 225 litres. What is the French name for this barrel size?",
+        "hintText": "The English word is 'barrel' but the French wine term is more specific. It has eight letters and ends in '-ique'.",
+        "latitude": 20.005800,
+        "longitude": 73.696800,
+        "type": "clue",
+        "answer": "barrique",
+        "unlockRadius": 20,
+        "funFact": "French oak barrels from the Allier and Nevers forests cost ₹80,000–₹1,20,000 each and are used for only 3–4 vintages."
+      },
+      {
+        "_docId": "sv_cp_06",
+        "huntId": "sula_vineyards",
+        "orderIndex": 5,
+        "clueText": "From the highest point of the estate, the whole story of Sula unfolds in one frame: dam to the north, winery roof to the south, and endless vine rows between them. Photograph all three elements in a single panoramic shot to complete your quest.",
+        "hintText": "Take the unpaved track that forks right after the barrel room exit. The best panoramic angle faces north-northwest.",
+        "latitude": 20.004200,
+        "longitude": 73.698500,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 30,
+        "funFact": "India now has over 100 wineries and Nashik produces 80% of domestic wine."
+      }
+    ]
+  }
+}

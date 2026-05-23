@@ -1,0 +1,48 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "hunts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive",  "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "hunts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "city",      "order": "ASCENDING"  },
+        { "fieldPath": "isActive",  "order": "ASCENDING"  },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "hunts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "city",     "order": "ASCENDING"  },
+        { "fieldPath": "isActive", "order": "ASCENDING"  },
+        { "fieldPath": "isFree",   "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "huntProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",    "order": "ASCENDING"  },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "huntProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",    "order": "ASCENDING"  },
+        { "fieldPath": "status",    "order": "ASCENDING"  },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

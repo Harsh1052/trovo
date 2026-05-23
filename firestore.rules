@@ -1,0 +1,162 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helper functions
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Path-level ownership: the wildcard segment in the route equals the
+    // authenticated UID (e.g. /users/{uid} or /completions/{userId}).
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Field-level ownership: a document field named 'userId' must match
+    // the authenticated UID. Used for collections whose document IDs are
+    // not the UID itself (e.g. huntProgress/{userId}_{huntId}).
+    function ownsDoc() {
+      return isAuthenticated()
+          && (resource == null || resource.data.userId == request.auth.uid);
+    }
+
+    function ownsIncoming() {
+      return isAuthenticated()
+          && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Valid progress status strings — must stay in sync with
+    // HuntProgressModel.storageName in the Dart client.
+    function isValidStatus(status) {
+      return status in ['in_progress', 'completed', 'abandoned'];
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // users/{uid}
+    // ─────────────────────────────────────────────────────────────────────────
+    // • Users may read and write only their own document.
+    // • The 'uid' field inside the document must always equal the auth UID.
+    // • 'createdAt' is write-once: it cannot be changed after the document
+    //   is first created.
+    // ─────────────────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid)
+                    // Enforce that the uid field stored in the document
+                    // matches the authenticated user.
+                    && request.resource.data.uid == request.auth.uid;
+
+      allow update: if isOwner(uid)
+                    // uid field is immutable.
+                    && request.resource.data.uid == resource.data.uid
+                    // createdAt is write-once — cannot be changed post-creation.
+                    && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Accounts are not deletable from the client.
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hunts/{huntId}
+    // ─────────────────────────────────────────────────────────────────────────
+    // • Any authenticated user may read hunt documents.
+    // • All writes are denied from the client — hunts are managed exclusively
+    //   through the Firebase Console or Admin SDK / Cloud Functions.
+    //
+    // ⚠  RATE LIMITING NOTE
+    //    Firestore Security Rules have no built-in mechanism to count previous
+    //    requests, so a "100 reads per user per minute" limit cannot be
+    //    expressed here.  The recommended mitigations are:
+    //
+    //    1. Firebase App Check (strongly recommended)
+    //       Restricts API access to verified app binaries, blocking scraping
+    //       and bulk unauthenticated callers at the platform level.
+    //       https://firebase.google.com/docs/app-check
+    //
+    //    2. Cloud Functions proxy
+    //       If you need hard per-user quotas, serve hunt reads through an
+    //       HTTPS callable function that enforces rate limits in memory or via
+    //       Firestore/Redis counters.
+    //
+    //    3. Firestore budget alerts
+    //       Set a monthly usage alert in the GCP console to detect runaway
+    //       reads before they become expensive.
+    // ─────────────────────────────────────────────────────────────────────────
+    match /hunts/{huntId} {
+      allow read:  if isAuthenticated();
+      allow write: if false;
+
+      // ── checkpoints (sub-collection) ──────────────────────────────────────
+      // Same policy as the parent: authenticated read, no client writes.
+      // Checkpoints are uploaded via Admin SDK alongside their parent hunt.
+      match /checkpoints/{checkpointId} {
+        allow read:  if isAuthenticated();
+        allow write: if false;
+      }
+
+      // ── completions (sub-collection) ──────────────────────────────────────
+      // Document ID is the user's UID. Users may read/write only their own
+      // completion record (written when a hunt is finished).
+      match /completions/{userId} {
+        allow read:   if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if false;
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // huntProgress/{userId}_{huntId}
+    // ─────────────────────────────────────────────────────────────────────────
+    // • Document ID is formatted as "{userId}_{huntId}" by the client.
+    // • Users may read/write only documents whose 'userId' field matches
+    //   their auth UID.
+    //
+    // Field constraints enforced on every write:
+    //   status                  ∈ { 'in_progress', 'completed', 'abandoned' }
+    //   currentCheckpointIndex  ≥ 0
+    //   hintsUsed               ≥ 0
+    //
+    // Immutability constraints on update:
+    //   userId and huntId fields must not change after creation.
+    //
+    // Progress documents are never deleted from the client — abandoned hunts
+    // are marked with status 'abandoned' instead.
+    // ─────────────────────────────────────────────────────────────────────────
+    match /huntProgress/{docId} {
+      allow read: if ownsDoc();
+
+      allow create: if ownsIncoming()
+                    && isValidStatus(request.resource.data.status)
+                    && request.resource.data.currentCheckpointIndex >= 0
+                    && request.resource.data.hintsUsed >= 0;
+
+      allow update: if ownsDoc()
+                    && ownsIncoming()
+                    // userId and huntId are write-once — they identify the
+                    // progress record and must never change.
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.huntId == resource.data.huntId
+                    && isValidStatus(request.resource.data.status)
+                    && request.resource.data.currentCheckpointIndex >= 0
+                    && request.resource.data.hintsUsed >= 0;
+
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Default deny
+    // ─────────────────────────────────────────────────────────────────────────
+    // Firestore denies all paths not matched above by default.  The explicit
+    // match block is a no-op but serves as a visible reminder of that contract.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

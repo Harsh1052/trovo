@@ -1,0 +1,16 @@
+{
+  "name": "trovo-seed",
+  "version": "1.0.0",
+  "description": "Seed production Firestore with hunt data",
+  "main": "seed_firestore.js",
+  "scripts": {
+    "seed": "node seed_firestore.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "firebase-admin": "^13.8.0"
+  }
+}

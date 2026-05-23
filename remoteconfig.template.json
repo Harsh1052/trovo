@@ -1,0 +1,39 @@
+{
+  "parameters": {
+    "force_update_version": {
+      "defaultValue": { "value": "" },
+      "valueType": "STRING",
+      "description": "Minimum app version required. Empty = no forced update."
+    },
+    "kill_switch": {
+      "defaultValue": { "value": "false" },
+      "valueType": "BOOLEAN",
+      "description": "If true, shows maintenance screen and blocks app usage."
+    },
+    "free_hunt_id": {
+      "defaultValue": { "value": "" },
+      "valueType": "STRING",
+      "description": "Hunt ID that is currently free for all users (promo)."
+    },
+    "gps_unlock_radius_meters": {
+      "defaultValue": { "value": "20" },
+      "valueType": "NUMBER",
+      "description": "Radius in metres within which a checkpoint is considered reached."
+    },
+    "max_hints_per_hunt": {
+      "defaultValue": { "value": "3" },
+      "valueType": "NUMBER",
+      "description": "Maximum hints a player may use per checkpoint."
+    },
+    "show_paywall": {
+      "defaultValue": { "value": "true" },
+      "valueType": "BOOLEAN",
+      "description": "Whether to show the paywall screen for paid hunts."
+    },
+    "maintenance_message": {
+      "defaultValue": { "value": "We're updating HunterMania. Back shortly!" },
+      "valueType": "STRING",
+      "description": "Message shown when kill_switch is true."
+    }
+  }
+}
