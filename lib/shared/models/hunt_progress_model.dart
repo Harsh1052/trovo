@@ -52,6 +52,19 @@ class HuntProgressModel extends Equatable {
   bool get isComplete => status == HuntStatus.completed;
   bool get isActive => status == HuntStatus.inProgress;
 
+  /// Wall-clock elapsed time from [startedAt] to [completedAt] (or now if still active).
+  Duration get elapsedDuration {
+    final end = completedAt ?? DateTime.now();
+    return end.difference(startedAt);
+  }
+
+  /// Percentage of checkpoints completed (0.0–1.0).
+  /// Returns 0.0 when [totalCheckpoints] is not provided or is zero.
+  double scorePercentage(int totalCheckpoints) {
+    if (totalCheckpoints <= 0) return 0.0;
+    return (checkpointTimestamps.length / totalCheckpoints).clamp(0.0, 1.0);
+  }
+
   /// IDs of all checkpoints that have been completed.
   List<String> get completedCheckpointIds =>
       checkpointTimestamps.keys.toList();
