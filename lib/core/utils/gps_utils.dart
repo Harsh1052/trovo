@@ -64,6 +64,39 @@ abstract final class GpsUtils {
     return (_toDegrees(bearing) + 360) % 360;
   }
 
+  /// Returns a compass rose label ("N", "NE", "E", …, "NW") for a [bearing] in degrees.
+  static String compassDirection(double bearing) {
+    const directions = [
+      'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW',
+    ];
+    // Each sector is 45°; offset by 22.5° so North is centred.
+    final index = ((bearing + 22.5) / 45).floor() % 8;
+    return directions[index];
+  }
+
+  /// Geographic midpoint between two lat/lng pairs.
+  static ({double lat, double lng}) midpoint(
+    double lat1,
+    double lng1,
+    double lat2,
+    double lng2,
+  ) {
+    final rLat1 = _toRadians(lat1);
+    final rLat2 = _toRadians(lat2);
+    final dLng = _toRadians(lng2 - lng1);
+
+    final bx = math.cos(rLat2) * math.cos(dLng);
+    final by = math.cos(rLat2) * math.sin(dLng);
+
+    final midLat = math.atan2(
+      math.sin(rLat1) + math.sin(rLat2),
+      math.sqrt((math.cos(rLat1) + bx) * (math.cos(rLat1) + bx) + by * by),
+    );
+    final midLng = _toRadians(lng1) + math.atan2(by, math.cos(rLat1) + bx);
+
+    return (lat: _toDegrees(midLat), lng: _toDegrees(midLng));
+  }
+
   static double _toRadians(double degrees) => degrees * math.pi / 180;
   static double _toDegrees(double radians) => radians * 180 / math.pi;
 }
