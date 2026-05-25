@@ -152,5 +152,54 @@ void main() {
         }
       });
     });
+
+    // ── compassDirection ────────────────────────────────────────────────────
+
+    group('compassDirection', () {
+      test('0° is North', () => expect(GpsUtils.compassDirection(0), 'N'));
+      test('45° is NE', () => expect(GpsUtils.compassDirection(45), 'NE'));
+      test('90° is East', () => expect(GpsUtils.compassDirection(90), 'E'));
+      test('135° is SE', () => expect(GpsUtils.compassDirection(135), 'SE'));
+      test('180° is South', () => expect(GpsUtils.compassDirection(180), 'S'));
+      test('225° is SW', () => expect(GpsUtils.compassDirection(225), 'SW'));
+      test('270° is West', () => expect(GpsUtils.compassDirection(270), 'W'));
+      test('315° is NW', () => expect(GpsUtils.compassDirection(315), 'NW'));
+      test('360° wraps back to North', () => expect(GpsUtils.compassDirection(360), 'N'));
+      test('22° boundary is still North (sector < 22.5)', () {
+        expect(GpsUtils.compassDirection(22), 'N');
+      });
+      test('23° crosses into NE sector', () {
+        expect(GpsUtils.compassDirection(23), 'NE');
+      });
+    });
+
+    // ── midpoint ──────────────────────────────────────────────────────────────
+
+    group('midpoint', () {
+      test('midpoint of identical coords equals that coord', () {
+        final mid = GpsUtils.midpoint(12.9716, 77.5946, 12.9716, 77.5946);
+        expect(mid.lat, closeTo(12.9716, 0.0001));
+        expect(mid.lng, closeTo(77.5946, 0.0001));
+      });
+
+      test('midpoint of equator is at lat 0 between both lngs', () {
+        final mid = GpsUtils.midpoint(0, 0, 0, 90);
+        expect(mid.lat, closeTo(0.0, 0.1));
+        expect(mid.lng, closeTo(45.0, 0.5));
+      });
+
+      test('is symmetric: mid(A,B) ≈ mid(B,A)', () {
+        final ab = GpsUtils.midpoint(12.9716, 77.5946, 28.6139, 77.2090);
+        final ba = GpsUtils.midpoint(28.6139, 77.2090, 12.9716, 77.5946);
+        expect(ab.lat, closeTo(ba.lat, 0.0001));
+        expect(ab.lng, closeTo(ba.lng, 0.0001));
+      });
+
+      test('lat is between the two input lats for same-hemisphere points', () {
+        final mid = GpsUtils.midpoint(10.0, 50.0, 20.0, 60.0);
+        expect(mid.lat, greaterThan(10.0));
+        expect(mid.lat, lessThan(20.0));
+      });
+    });
   });
 }
