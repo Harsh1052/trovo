@@ -62,4 +62,9 @@ abstract final class AppConstants {
   static const String eventPurchaseStarted = 'purchase_initiated';
   static const String eventPurchaseCompleted = 'purchase_completed';
   static const String eventShareTapped = 'share_tapped';
+  static const String eventAnswerWrong = 'answer_wrong';
+  static const String eventProfileViewed = 'profile_viewed';
+  static const String eventSignIn = 'user_sign_in';
+  static const String eventSignUp = 'user_sign_up';
+  static const String eventScreenView = 'screen_view';
 }
