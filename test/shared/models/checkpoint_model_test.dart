@@ -153,5 +153,67 @@ void main() {
         expect(CheckpointType.fromStorageName('garbage'), CheckpointType.clue);
       });
     });
+
+    // ── Computed helpers ───────────────────────────────────────────────────────
+
+    group('isPhotoTask / isClue', () {
+      test('clue checkpoint: isClue true, isPhotoTask false', () {
+        expect(baseModel.isClue, isTrue);
+        expect(baseModel.isPhotoTask, isFalse);
+      });
+
+      test('photo_task checkpoint: isPhotoTask true, isClue false', () {
+        final photo = baseModel.copyWith(type: CheckpointType.photoTask);
+        expect(photo.isPhotoTask, isTrue);
+        expect(photo.isClue, isFalse);
+      });
+    });
+
+    group('hasHint', () {
+      test('returns true when hintText is non-empty', () {
+        expect(baseModel.hasHint, isTrue);
+      });
+
+      test('returns false when hintText is empty', () {
+        final noHint = baseModel.copyWith(hintText: '');
+        expect(noHint.hasHint, isFalse);
+      });
+    });
+
+    group('hasFunFact', () {
+      test('returns true when funFact is non-empty', () {
+        expect(baseModel.hasFunFact, isTrue);
+      });
+
+      test('returns false when funFact is null', () {
+        final noFact = CheckpointModel(
+          checkpointId: 'cp_x',
+          huntId: 'hunt_x',
+          orderIndex: 0,
+          clueText: 'Clue',
+          hintText: '',
+          latitude: 0,
+          longitude: 0,
+          type: CheckpointType.clue,
+        );
+        expect(noFact.hasFunFact, isFalse);
+      });
+
+      test('returns false when funFact is empty string', () {
+        final emptyFact = baseModel.copyWith(funFact: '');
+        expect(emptyFact.hasFunFact, isFalse);
+      });
+    });
+
+    group('displayLabel', () {
+      test('clue type returns "Clue"', () {
+        expect(baseModel.displayLabel, 'Clue');
+      });
+
+      test('photo_task type returns "Photo Task"', () {
+        final photo = baseModel.copyWith(type: CheckpointType.photoTask);
+        expect(photo.displayLabel, 'Photo Task');
+      });
+    });
   });
 }

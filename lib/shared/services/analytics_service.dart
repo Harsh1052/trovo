@@ -100,6 +100,40 @@ class AnalyticsService {
   Future<void> logShareTapped(String huntId) =>
       _log(AppConstants.eventShareTapped, {'hunt_id': huntId});
 
+  // ── Screen tracking ─────────────────────────────────────────────────────────────
+
+  /// Log a screen view event. Call from each page's [initState] or route observer.
+  /// [screenName] should match the route path (e.g. "/home", "/hunt/123/active").
+  Future<void> logScreenView(String screenName) =>
+      _log(AppConstants.eventScreenView, {'screen_name': screenName});
+
+  // ── Answer feedback ───────────────────────────────────────────────────────────
+
+  /// Log a wrong answer submission. Useful for identifying poorly-worded clues.
+  Future<void> logAnswerWrong({
+    required String huntId,
+    required int checkpointIndex,
+  }) =>
+      _log(AppConstants.eventAnswerWrong, {
+        'hunt_id': huntId,
+        'checkpoint_index': checkpointIndex,
+      });
+
+  // ── Profile ───────────────────────────────────────────────────────────────────
+
+  Future<void> logProfileViewed(String userId) =>
+      _log(AppConstants.eventProfileViewed, {'user_id': userId});
+
+  // ── Auth ────────────────────────────────────────────────────────────────────────
+
+  /// Log a successful sign-in. [method] is "email", "google", or "guest".
+  Future<void> logSignIn(String method) =>
+      _log(AppConstants.eventSignIn, {'method': method});
+
+  /// Log a successful account creation. [method] is "email" or "google".
+  Future<void> logSignUp(String method) =>
+      _log(AppConstants.eventSignUp, {'method': method});
+
   // ── User identity ─────────────────────────────────────────────────────────
 
   /// Associate subsequent events with the given Firebase/app user ID.
