@@ -10,6 +10,8 @@ import '../../features/active_hunt/presentation/pages/photo_task_page.dart';
 import '../../features/auth/bloc/auth_bloc.dart';
 import '../../features/auth/bloc/auth_state.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/hunt_complete/presentation/pages/hunt_complete_page.dart';
 import '../../features/hunt_detail/presentation/pages/hunt_detail_page.dart';
@@ -64,7 +66,8 @@ String? _authRedirect(AuthState authState, GoRouterState routerState) {
     return isAuthenticated ? RouteNames.home : RouteNames.login;
   }
 
-  const publicRoutes = {RouteNames.onboarding, RouteNames.login};
+  const publicRoutes = {RouteNames.onboarding, RouteNames.login, RouteNames.register};
+
 
   if (!isAuthenticated && !publicRoutes.contains(location)) {
     return RouteNames.login;
@@ -94,6 +97,10 @@ final List<RouteBase> _routes = [
   GoRoute(
     path: RouteNames.login,
     builder: (_, _) => const LoginPage(),
+  ),
+  GoRoute(
+    path: RouteNames.register,
+    builder: (_, _) => const RegisterPage(),
   ),
 
   // ── Main shell ────────────────────────────────────────────────────────────────
