@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../app/routes/route_names.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
@@ -101,8 +103,8 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_obscurePassword
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined),
-                                onPressed: () => setState(() =>
-                                    _obscurePassword = !_obscurePassword),
+                                onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword),
                               ),
                             ),
                             validator: (v) =>
@@ -163,6 +165,32 @@ class _LoginPageState extends State<LoginPage> {
                             : () => context
                                 .read<AuthBloc>()
                                 .add(const AuthGuestSignInRequested()),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.spaceXL),
+
+                    // ── Register link ─────────────────────────────────────────
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'New here? ',
+                            style: AppTypography.bodyMedium
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.push(RouteNames.register),
+                            child: Text(
+                              'Create an account',
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
