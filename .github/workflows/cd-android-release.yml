@@ -1,0 +1,89 @@
+name: CD — Android Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Android Release & Publish GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.9'
+          channel: 'stable'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run unit tests
+        run: flutter test
+
+      - name: Build Android Release APK
+        run: |
+          flutter build apk \
+            --release \
+            --build-name=1.0.${{ github.run_number }} \
+            --build-number=${{ github.run_number }}
+
+      - name: Prepare APK artifact
+        run: |
+          mkdir -p release_artifacts
+          cp build/app/outputs/flutter-apk/app-release.apk release_artifacts/HunterMania-v1.0.${{ github.run_number }}.apk
+
+      - name: Create GitHub Release & Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: HunterMania v1.0.${{ github.run_number }}
+          body: |
+            ## HunterMania Release v1.0.${{ github.run_number }} 🚀
+            
+            - **Build Number:** `${{ github.run_number }}`
+            - **Commit:** `${{ github.sha }}`
+            - **Target Platform:** Android (Release APK)
+            
+            Download the attached `HunterMania-v1.0.${{ github.run_number }}.apk` to install on your Android device.
+          files: release_artifacts/HunterMania-v1.0.${{ github.run_number }}.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prune older releases (Keep latest 3)
+        uses: dev-drprasad/delete-older-releases@v0.3.3
+        with:
+          keep_latest: 3
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
