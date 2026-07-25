@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.trovo.app.trovo",
+      "sha256_cert_fingerprints": [
+        "0D:F7:20:4C:16:5B:6D:FF:6E:BD:B7:03:6E:81:D3:01:A5:A1:21:41:6A:94:53:02:51:46:D3:A7:2C:90:1A:C4"
+      ]
+    }
+  }
+]
