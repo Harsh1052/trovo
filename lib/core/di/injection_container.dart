@@ -23,6 +23,7 @@ import '../../shared/repositories/payment_repository.dart';
 import '../../shared/repositories/progress_repository.dart';
 import '../../shared/services/analytics_service.dart';
 import '../../shared/services/location_service.dart';
+import '../../shared/services/notification_service.dart';
 import '../../shared/services/offline_hunt_cache_service.dart';
 import '../../shared/services/purchase_service.dart';
 import '../config/remote_config_service.dart';
@@ -75,6 +76,7 @@ Future<void> initDependencies() async {
   // ── Foundational Services ───────────────────────────────────────────────
   sl.registerSingleton<RemoteConfigService>(RemoteConfigService());
   sl.registerSingleton<DeepLinkService>(DeepLinkService());
+  sl.registerSingleton<NotificationService>(NotificationService());
 
   // ── 4. Repositories (lazy singletons bound to their abstractions) ─────────
   // Binding to the abstract type means feature code never imports a Firebase
