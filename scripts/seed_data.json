@@ -41,6 +41,23 @@
       "startLongitude": 73.698000,
       "isActive": true,
       "createdAt": "2024-10-05T09:00:00.000Z"
+    },
+    {
+      "_docId": "cubbon_park_emerald",
+      "title": "The Emerald of Cubbon Park",
+      "description": "Embark on an urban adventure through Bengaluru's lush green heart. Uncover ancient bamboo groves, red Greco-Roman architecture, royal statues, and secret bandstands hidden within 300 acres of botanical paradise.",
+      "city": "Bengaluru",
+      "gardenName": "Cubbon Park",
+      "difficulty": "medium",
+      "durationMinutes": 60,
+      "checkpointCount": 5,
+      "isFree": true,
+      "price": 0,
+      "coverImageUrl": "assets/images/cover_cubbon_park.png",
+      "startLatitude": 12.976300,
+      "startLongitude": 77.592900,
+      "isActive": true,
+      "createdAt": "2026-07-25T12:00:00.000Z"
     }
   ],
 
@@ -230,6 +247,74 @@
         "answer": null,
         "unlockRadius": 30,
         "funFact": "India now has over 100 wineries and Nashik produces 80% of domestic wine."
+      }
+    ],
+
+    "cubbon_park_emerald": [
+      {
+        "_docId": "cpe_cp_01",
+        "huntId": "cubbon_park_emerald",
+        "orderIndex": 0,
+        "clueText": "I am a giant bamboo grove planted in 1870. When the breeze blows through my hollow green stems, I rustle like a forest stream. What type of plant am I?",
+        "hintText": "Pandas love to eat this plant. It is the fastest-growing woody plant in the world.",
+        "latitude": 12.976300,
+        "longitude": 77.592900,
+        "type": "clue",
+        "answer": "bamboo",
+        "unlockRadius": 20,
+        "funFact": "Cubbon Park's bamboo groves date back over 150 years and house over 6,000 species of flora."
+      },
+      {
+        "_docId": "cpe_cp_02",
+        "huntId": "cubbon_park_emerald",
+        "orderIndex": 1,
+        "clueText": "Stand near the striking red Greco-Roman facade of the Seshadri Iyer Memorial Hall (State Central Library). Take a victory photo near the stone archway!",
+        "hintText": "Look for the iconic bright red heritage building housing thousands of historic books.",
+        "latitude": 12.975400,
+        "longitude": 77.591800,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 25,
+        "funFact": "The State Central Library inside Seshadri Iyer Memorial Hall holds over 300,000 rare books, including braille editions."
+      },
+      {
+        "_docId": "cpe_cp_03",
+        "huntId": "cubbon_park_emerald",
+        "orderIndex": 2,
+        "clueText": "Guarded by silver oak trees, I am a queen sculpted in white marble who ruled an empire where the sun never set. What is her name?",
+        "hintText": "She was the Queen of the United Kingdom and Empress of India until 1901.",
+        "latitude": 12.977100,
+        "longitude": 77.594200,
+        "type": "clue",
+        "answer": "victoria",
+        "unlockRadius": 20,
+        "funFact": "The Victoria Statue at Cubbon Park was unveiled in 1906 and is one of the few surviving British-era marble statues in India."
+      },
+      {
+        "_docId": "cpe_cp_04",
+        "huntId": "cubbon_park_emerald",
+        "orderIndex": 3,
+        "clueText": "I am an octagonal red-brick structure with cast-iron pillars. Royal military brass bands played concerts here every Sunday evening in the 19th century. What am I called?",
+        "hintText": "Eight-sided roofed structure for live musical performances.",
+        "latitude": 12.974800,
+        "longitude": 77.593500,
+        "type": "clue",
+        "answer": "bandstand",
+        "unlockRadius": 20,
+        "funFact": "Built in 1870, the Cubbon Park Bandstand was the cultural heart of British Bangalore's social life."
+      },
+      {
+        "_docId": "cpe_cp_05",
+        "huntId": "cubbon_park_emerald",
+        "orderIndex": 4,
+        "clueText": "Reach the lotus fountain pond surrounded by Royal Palms. Take a photo of the water lily blossoms reflecting the blue sky to complete your quest!",
+        "hintText": "Located near the rose garden walkway on the eastern side of the park.",
+        "latitude": 12.973900,
+        "longitude": 77.595100,
+        "type": "photo_task",
+        "answer": null,
+        "unlockRadius": 30,
+        "funFact": "Cubbon Park reduces Bengaluru's central urban heat island temperature by up to 3°C!"
       }
     ]
   }
