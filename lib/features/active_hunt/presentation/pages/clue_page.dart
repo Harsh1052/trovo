@@ -7,7 +7,6 @@ import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/utils/gps_utils.dart';
 import '../../../../shared/models/checkpoint_model.dart';
 import '../../../../shared/widgets/hm_button.dart';
 import '../../../../shared/widgets/hm_error_widget.dart';
@@ -18,10 +17,12 @@ import '../../../../features/auth/bloc/auth_state.dart';
 import '../../bloc/active_hunt_bloc.dart';
 import '../../bloc/active_hunt_event.dart';
 import '../../bloc/active_hunt_state.dart';
+import '../../../../core/utils/proximity_calculator.dart';
 import '../widgets/checkpoint_celebration.dart';
 import '../widgets/hint_bottom_sheet.dart';
 import '../widgets/hunt_progress_bar.dart';
 import '../widgets/letter_box_input.dart';
+import '../widgets/radar_compass_widget.dart';
 
 class CluePage extends StatefulWidget {
   const CluePage({super.key, required this.huntId});
@@ -176,10 +177,20 @@ class _ClueContent extends StatelessWidget {
                 total: state.checkpoints.length,
               ),
               const SizedBox(height: AppDimensions.spaceL),
-              if (distance != null)
-                _DistanceBanner(metres: distance,
-                    isAt: state.isWithinRange),
-              const SizedBox(height: AppDimensions.spaceL),
+              if (distance != null) ...[
+                Center(
+                  child: RadarCompassWidget(
+                    feedback: ProximityCalculator.calculate(
+                      userLat: state.currentLat ?? 0.0,
+                      userLng: state.currentLng ?? 0.0,
+                      targetLat: checkpoint.latitude,
+                      targetLng: checkpoint.longitude,
+                      unlockRadiusMetres: checkpoint.unlockRadius.toDouble(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppDimensions.spaceL),
+              ],
               Text('Clue', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppDimensions.spaceS),
               Container(
@@ -237,45 +248,5 @@ class _ClueContent extends StatelessWidget {
     final m = seconds ~/ 60;
     final s = seconds % 60;
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-  }
-}
-
-class _DistanceBanner extends StatelessWidget {
-  const _DistanceBanner({required this.metres, required this.isAt});
-
-  final double metres;
-  final bool isAt;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.spaceM,
-          vertical: AppDimensions.spaceS),
-      decoration: BoxDecoration(
-        color: isAt
-            ? AppColors.successLight
-            : AppColors.infoLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isAt ? Icons.check_circle_rounded : Icons.near_me_rounded,
-            size: 18,
-            color: isAt ? AppColors.success : AppColors.info,
-          ),
-          const SizedBox(width: AppDimensions.spaceS),
-          Text(
-            isAt
-                ? 'You\'re at the checkpoint!'
-                : GpsUtils.formatDistance(metres),
-            style: AppTypography.labelMedium.copyWith(
-                color: isAt ? AppColors.success : AppColors.info),
-          ),
-        ],
-      ),
-    );
   }
 }
