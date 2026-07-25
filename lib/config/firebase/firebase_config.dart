@@ -8,9 +8,17 @@ import '../../firebase_options.dart';
 /// Call once from [main] before [runApp].
 abstract final class FirebaseConfig {
   static Future<void> initialize() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    try {
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[Firebase] Initialization notice: $e');
+      }
+    }
 
     if (kDebugMode) {
       debugPrint('[Firebase] Initialized successfully');
