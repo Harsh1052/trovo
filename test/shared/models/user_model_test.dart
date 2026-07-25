@@ -85,7 +85,7 @@ void main() {
     });
 
     test('returns true when email is null', () {
-      final guest = baseUser.copyWith(email: null);
+      baseUser.copyWith(email: null);
       // copyWith does not support setting null back; test via fromJson instead.
       final model = UserModel.fromJson({'uid': 'g1', 'displayName': 'Guest'});
       expect(model.isGuest, isTrue);
@@ -112,7 +112,7 @@ void main() {
     });
 
     test('returns false when photoUrl is null', () {
-      final model = baseUser.copyWith(photoUrl: null);
+      baseUser.copyWith(photoUrl: null);
       // copyWith does not clear; test via direct construction.
       final noPhoto = UserModel(
         uid: 'p1',

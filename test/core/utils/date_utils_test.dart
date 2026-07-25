@@ -98,44 +98,46 @@ void main() {
     // ── timeAgo ───────────────────────────────────────────────────────────────
 
     group('timeAgo', () {
+      final referenceNow = DateTime(2025, 6, 15, 12, 0, 0);
+
       test('returns "just now" for timestamps within 60 seconds ago', () {
-        final dt = DateTime.now().subtract(const Duration(seconds: 30));
-        expect(HMDateUtils.timeAgo(dt), 'just now');
+        final dt = referenceNow.subtract(const Duration(seconds: 30));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), 'just now');
       });
 
       test('returns "just now" for exactly 0 seconds ago', () {
-        expect(HMDateUtils.timeAgo(DateTime.now()), 'just now');
+        expect(HMDateUtils.timeAgo(referenceNow, now: referenceNow), 'just now');
       });
 
       test('returns minutes ago for timestamps 2–59 minutes ago', () {
-        final dt = DateTime.now().subtract(const Duration(minutes: 5));
-        expect(HMDateUtils.timeAgo(dt), '5m ago');
+        final dt = referenceNow.subtract(const Duration(minutes: 5));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), '5m ago');
       });
 
       test('returns hours ago for timestamps 1–23 hours ago', () {
-        final dt = DateTime.now().subtract(const Duration(hours: 3));
-        expect(HMDateUtils.timeAgo(dt), '3h ago');
+        final dt = referenceNow.subtract(const Duration(hours: 3));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), '3h ago');
       });
 
       test('returns days ago for timestamps 1–6 days ago', () {
-        final dt = DateTime.now().subtract(const Duration(days: 2));
-        expect(HMDateUtils.timeAgo(dt), '2d ago');
+        final dt = referenceNow.subtract(const Duration(days: 2));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), '2d ago');
       });
 
       test('returns short date for timestamps older than 7 days', () {
         final dt = DateTime(2025, 1, 1);
-        final result = HMDateUtils.timeAgo(dt);
+        final result = HMDateUtils.timeAgo(dt, now: referenceNow);
         expect(result, HMDateUtils.toShortDate(dt));
       });
 
       test('returns "X left" suffix for future timestamps within 60 min', () {
-        final dt = DateTime.now().add(const Duration(minutes: 10));
-        expect(HMDateUtils.timeAgo(dt), '10m left');
+        final dt = referenceNow.add(const Duration(minutes: 10));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), '10m left');
       });
 
       test('returns "X left" for future timestamps within 24 h', () {
-        final dt = DateTime.now().add(const Duration(hours: 2));
-        expect(HMDateUtils.timeAgo(dt), '2h left');
+        final dt = referenceNow.add(const Duration(hours: 2));
+        expect(HMDateUtils.timeAgo(dt, now: referenceNow), '2h left');
       });
     });
   });

@@ -27,8 +27,10 @@ abstract final class HMDateUtils {
   }
 
   /// Human-readable "X ago" / "just now" / "in Xm" for future dates.
-  static String timeAgo(DateTime dt) {
-    final diff = DateTime.now().difference(dt);
+  ///
+  /// Pass [now] to override the reference time (useful for deterministic tests).
+  static String timeAgo(DateTime dt, {DateTime? now}) {
+    final diff = (now ?? DateTime.now()).difference(dt);
     final abs = diff.abs();
 
     if (abs.inSeconds < 60) return 'just now';
