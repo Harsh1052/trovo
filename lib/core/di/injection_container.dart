@@ -28,8 +28,10 @@ import '../../shared/services/offline_hunt_cache_service.dart';
 import '../../shared/services/purchase_service.dart';
 import '../../shared/services/showcase_service.dart';
 import '../config/remote_config_service.dart';
+import '../config/version_check_service.dart';
 import '../deeplink/deeplink_service.dart';
 import '../error/crashlytics_observer.dart';
+import '../security/secure_storage_service.dart';
 
 /// Global service locator. Access via `sl<T>()` anywhere in the app.
 final GetIt sl = GetIt.instance;
@@ -81,6 +83,10 @@ Future<void> initDependencies() async {
   sl.registerSingleton<NotificationService>(NotificationService());
   sl.registerSingleton<CrashlyticsObserver>(CrashlyticsObserver());
   sl.registerSingleton<ShowcaseService>(ShowcaseService());
+  sl.registerSingleton<SecureStorageService>(SecureStorageService());
+  sl.registerSingleton<VersionCheckService>(
+    VersionCheckService(remoteConfig: sl<RemoteConfigService>()),
+  );
 
   // ── 4. Repositories (lazy singletons bound to their abstractions) ─────────
   // Binding to the abstract type means feature code never imports a Firebase
