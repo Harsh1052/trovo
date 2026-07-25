@@ -60,14 +60,14 @@ jobs:
             cat <<'EOF' > android/app/google-services.json
           {
             "project_info": {
-              "project_number": "123456789012",
-              "project_id": "trovo-app",
-              "storage_bucket": "trovo-app.appspot.com"
+              "project_number": "289305172353",
+              "project_id": "trovo-prod-app",
+              "storage_bucket": "trovo-prod-app.firebasestorage.app"
             },
             "client": [
               {
                 "client_info": {
-                  "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890",
+                  "mobilesdk_app_id": "1:289305172353:android:3439a36755eeb1feccb080",
                   "android_client_info": {
                     "package_name": "com.trovo.app.trovo"
                   }
@@ -75,7 +75,7 @@ jobs:
                 "oauth_client": [],
                 "api_key": [
                   {
-                    "current_key": "AIzaSyDummyKeyForCIBuildingOnly12345"
+                    "current_key": "AIzaSyAJl2ZMl0d-ZOMWtPPzPW8KYM3esLD0YUg"
                   }
                 ],
                 "services": {

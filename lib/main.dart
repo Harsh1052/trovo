@@ -5,6 +5,7 @@ import 'app/app.dart';
 import 'app/app_bloc_observer.dart';
 import 'config/firebase/firebase_config.dart';
 import 'core/di/injection_container.dart';
+import 'core/error/crashlytics_observer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,9 @@ Future<void> main() async {
 
   // Dependency injection
   await initDependencies();
+
+  // Global Error Boundary & Crashlytics
+  sl<CrashlyticsObserver>().initGlobalErrorHooks();
 
   // Global BLoC observer (debug logging)
   Bloc.observer = AppBlocObserver();
