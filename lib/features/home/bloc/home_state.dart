@@ -50,6 +50,18 @@ final class HomeLoaded extends HomeState {
   String get cityLabel =>
       selectedCity.isEmpty ? 'All Cities' : selectedCity;
 
+  /// True when there is at least one hunt to display.
+  bool get hasHunts => hunts.isNotEmpty;
+
+  /// True when there is a featured (hero) hunt to show.
+  bool get hasFeaturedHunt => featuredHunt != null;
+
+  /// True when more than one city is available so the selector chip is shown.
+  bool get hasMultipleCities => availableCities.length > 1;
+
+  /// Total number of hunts in the current result set.
+  int get totalCount => hunts.length;
+
   // ── copyWith ──────────────────────────────────────────────────────────────
 
   HomeLoaded copyWith({

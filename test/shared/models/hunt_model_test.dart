@@ -184,5 +184,86 @@ void main() {
         expect(HuntDifficulty.hard.name, 'hard');
       });
     });
+
+    // ── Computed display helpers ──────────────────────────────────────────────
+
+    group('formattedDuration', () {
+      HuntModel withDuration(int minutes) =>
+          baseModel.copyWith(durationMinutes: minutes);
+
+      test('returns "45 min" for 45 minutes', () {
+        expect(withDuration(45).formattedDuration, '45 min');
+      });
+
+      test('returns "1 h" for exactly 60 minutes', () {
+        expect(withDuration(60).formattedDuration, '1 h');
+      });
+
+      test('returns "1 h 30 min" for 90 minutes', () {
+        expect(withDuration(90).formattedDuration, '1 h 30 min');
+      });
+
+      test('returns "2 h" for exactly 120 minutes', () {
+        expect(withDuration(120).formattedDuration, '2 h');
+      });
+
+      test('returns "2 h 5 min" for 125 minutes', () {
+        expect(withDuration(125).formattedDuration, '2 h 5 min');
+      });
+    });
+
+    group('formattedPrice', () {
+      test('returns Free when isFree is true', () {
+        final model = baseModel.copyWith(isFree: true, price: 0);
+        expect(model.formattedPrice, 'Free');
+      });
+
+      test('returns Free when price is 0 even if isFree is false', () {
+        final model = baseModel.copyWith(isFree: false, price: 0);
+        expect(model.formattedPrice, 'Free');
+      });
+
+      test('returns formatted price for 499 cents', () {
+        final model = baseModel.copyWith(isFree: false, price: 499);
+        expect(model.formattedPrice, r'$4.99');
+      });
+
+      test('returns formatted price for 1000 cents', () {
+        final model = baseModel.copyWith(isFree: false, price: 1000);
+        expect(model.formattedPrice, r'$10.00');
+      });
+    });
+
+    group('difficultyLabel', () {
+      test('easy maps to Easy', () {
+        expect(
+          baseModel.copyWith(difficulty: HuntDifficulty.easy).difficultyLabel,
+          'Easy',
+        );
+      });
+      test('medium maps to Medium', () {
+        expect(
+          baseModel.copyWith(difficulty: HuntDifficulty.medium).difficultyLabel,
+          'Medium',
+        );
+      });
+      test('hard maps to Hard', () {
+        expect(
+          baseModel.copyWith(difficulty: HuntDifficulty.hard).difficultyLabel,
+          'Hard',
+        );
+      });
+    });
+
+    group('hasCoverImage', () {
+      test('returns true when coverImageUrl is non-empty', () {
+        expect(baseModel.hasCoverImage, isTrue);
+      });
+
+      test('returns false when coverImageUrl is empty string', () {
+        final model = baseModel.copyWith(coverImageUrl: '');
+        expect(model.hasCoverImage, isFalse);
+      });
+    });
   });
 }

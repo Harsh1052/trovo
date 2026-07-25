@@ -26,6 +26,35 @@ class UserModel extends Equatable {
   final DateTime createdAt;
   final DateTime lastActiveAt;
 
+  // ── Computed helpers ────────────────────────────────────────────────────
+
+  /// True when this account is an anonymous (guest) Firebase user.
+  /// Anonymous users have no email address set.
+  bool get isGuest => email == null || email!.trim().isEmpty;
+
+  /// True when the user has a non-empty profile photo URL.
+  bool get hasPhoto => photoUrl != null && photoUrl!.isNotEmpty;
+
+  /// Two-letter initials from [displayName] for avatar placeholders.
+  /// "Jane Doe" → "JD", "Alice" → "A", empty name → "?".
+  String get initials {
+    final trimmed = displayName.trim();
+    if (trimmed.isEmpty) return '?';
+    final parts = trimmed.split(RegExp(r'\s+'));
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+  }
+
+  /// Whether the user has already completed the given hunt.
+  bool hasCompletedHunt(String huntId) => completedHunts.contains(huntId);
+
+  /// Whether the user has purchased (unlocked) the given hunt.
+  bool hasPurchasedHunt(String huntId) => purchasedHunts.contains(huntId);
+
+  /// True if the user has access to [huntId] — either purchased or completed.
+  bool hasAccessTo(String huntId) =>
+      hasCompletedHunt(huntId) || hasPurchasedHunt(huntId);
+
   // ── Firestore ─────────────────────────────────────────────────────────────
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {

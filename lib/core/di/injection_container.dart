@@ -17,11 +17,13 @@ import '../../features/paywall/bloc/paywall_cubit.dart';
 import '../../features/profile/bloc/profile_cubit.dart';
 import '../network/connectivity_checker.dart';
 import '../../shared/repositories/auth_repository.dart';
+import '../../shared/repositories/cached_hunt_repository.dart';
 import '../../shared/repositories/hunt_repository.dart';
 import '../../shared/repositories/payment_repository.dart';
 import '../../shared/repositories/progress_repository.dart';
 import '../../shared/services/analytics_service.dart';
 import '../../shared/services/location_service.dart';
+import '../../shared/services/offline_hunt_cache_service.dart';
 import '../../shared/services/purchase_service.dart';
 
 /// Global service locator. Access via `sl<T>()` anywhere in the app.
@@ -80,9 +82,18 @@ Future<void> initDependencies() async {
     ),
   );
 
+  // ── Offline cache ─────────────────────────────────────────────────────────
+  sl.registerLazySingleton<OfflineHuntCacheService>(
+    () => OfflineHuntCacheService(),
+  );
+
   sl.registerLazySingleton<HuntRepository>(
-    () => FirebaseHuntRepository(
-      firestore: sl<FirebaseFirestore>(),
+    () => CachedHuntRepository(
+      remote: FirebaseHuntRepository(
+        firestore: sl<FirebaseFirestore>(),
+      ),
+      cache: sl<OfflineHuntCacheService>(),
+      connectivity: sl<ConnectivityChecker>(),
     ),
   );
 

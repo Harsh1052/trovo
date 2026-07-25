@@ -102,6 +102,31 @@ final class ActiveHuntInProgress extends ActiveHuntState {
     return 1;
   }
 
+  /// 0.0 – 1.0 fraction of checkpoints completed. Safe when total is 0.
+  double get progressFraction {
+    if (checkpoints.isEmpty) return 0.0;
+    return (currentCheckpointIndex / checkpoints.length).clamp(0.0, 1.0);
+  }
+
+  /// Whether the player is on the very last checkpoint.
+  bool get isLastCheckpoint =>
+      currentCheckpointIndex == checkpoints.length - 1;
+
+  /// Whether the hint button should be shown and active.
+  bool get canRevealHint => remainingHints > 0;
+
+  /// True when the current checkpoint requires a text answer AND
+  /// the player is within the unlock radius (ready to type).
+  bool get canSubmitAnswer =>
+      currentCheckpoint.isClue && isWithinRange;
+
+  /// Elapsed time formatted as "mm:ss" for the in-hunt timer display.
+  String get formattedElapsed {
+    final minutes = elapsed.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = elapsed.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
   // ── copyWith ──────────────────────────────────────────────────────────────
 
   ActiveHuntInProgress copyWith({

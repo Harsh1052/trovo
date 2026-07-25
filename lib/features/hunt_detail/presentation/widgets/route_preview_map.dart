@@ -52,7 +52,7 @@ class RoutePreviewMap extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppDimensions.spaceM),
                     itemCount: checkpoints.length,
-                    separatorBuilder: (_, __) => const Icon(
+                    separatorBuilder: (_, _) => const Icon(
                       Icons.chevron_right,
                       color: AppColors.greyLight,
                     ),

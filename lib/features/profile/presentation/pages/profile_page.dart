@@ -75,13 +75,15 @@ class _ProfileContent extends StatelessWidget {
                 CircleAvatar(
                   radius: AppDimensions.avatarSizeM / 2,
                   backgroundColor: AppColors.primary,
-                  child: Text(
-                    user.displayName.isNotEmpty
-                        ? user.displayName[0].toUpperCase()
-                        : '?',
-                    style: AppTypography.headlineSmall
-                        .copyWith(color: Colors.white),
-                  ),
+                  backgroundImage:
+                      user.hasPhoto ? NetworkImage(user.photoUrl!) : null,
+                  child: user.hasPhoto
+                      ? null
+                      : Text(
+                          user.initials,
+                          style: AppTypography.headlineSmall
+                              .copyWith(color: Colors.white),
+                        ),
                 ),
                 const SizedBox(width: AppDimensions.spaceM),
                 Expanded(

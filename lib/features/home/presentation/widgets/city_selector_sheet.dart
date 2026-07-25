@@ -55,7 +55,7 @@ class CitySelectorSheet extends StatelessWidget {
             child: ListView.separated(
               controller: controller,
               itemCount: cities.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (_, i) {
                 final city = cities[i];
                 return ListTile(

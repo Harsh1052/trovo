@@ -56,4 +56,26 @@ extension ResultX<T> on Result<T> {
         Success<T>() => null,
         Err<T>(:final failure) => failure,
       };
+
+  /// Transforms the success value without touching the failure side.
+  ///
+  /// ```dart
+  /// final nameResult = userResult.mapSuccess((u) => u.displayName);
+  /// ```
+  Result<R> mapSuccess<R>(R Function(T data) transform) => switch (this) {
+        Success<T>(:final data) => Success(transform(data)),
+        Err<T>(:final failure) => Err(failure),
+      };
+
+  /// Calls [onSuccess] or [onErr] for side-effects only (returns void).
+  ///
+  /// Prefer [fold] when you need a return value.
+  void when({
+    required void Function(T data) onSuccess,
+    required void Function(Failure failure) onErr,
+  }) =>
+      switch (this) {
+        Success<T>(:final data) => onSuccess(data),
+        Err<T>(:final failure) => onErr(failure),
+      };
 }

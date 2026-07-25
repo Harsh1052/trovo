@@ -61,6 +61,27 @@ class CheckpointModel extends Equatable {
   /// Optional fun fact shown after the checkpoint is completed.
   final String? funFact;
 
+  // ── Computed helpers ───────────────────────────────────────────────────
+
+  /// True when this checkpoint requires a photo submission.
+  bool get isPhotoTask => type == CheckpointType.photoTask;
+
+  /// True when this checkpoint requires a text answer.
+  bool get isClue => type == CheckpointType.clue;
+
+  /// True when a hint is configured for this checkpoint.
+  bool get hasHint => hintText.isNotEmpty;
+
+  /// True when a fun fact is available to show post-completion.
+  bool get hasFunFact => funFact != null && funFact!.isNotEmpty;
+
+  /// Human-readable label for the checkpoint type, e.g. for accessibility
+  /// or filter chips: "Clue" / "Photo Task".
+  String get displayLabel => switch (type) {
+        CheckpointType.clue => 'Clue',
+        CheckpointType.photoTask => 'Photo Task',
+      };
+
   // ── Firestore ─────────────────────────────────────────────────────────────
 
   factory CheckpointModel.fromFirestore(DocumentSnapshot doc) {

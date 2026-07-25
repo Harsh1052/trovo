@@ -27,13 +27,13 @@ class HMCachedImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      placeholder: (_, __) => Container(
+      placeholder: (_, _) => Container(
         width: width,
         height: height,
         color: AppColors.shimmerBase,
         child: const Center(child: HMLoading(size: 24)),
       ),
-      errorWidget: (_, __, ___) => Container(
+      errorWidget: (_, _, _) => Container(
         width: width,
         height: height,
         color: AppColors.greyExtraLight,

@@ -51,6 +51,30 @@ class HuntModel extends Equatable {
 
   final DateTime createdAt;
 
+  // ── Computed / display helpers ────────────────────────────────────────────
+
+  /// Human-readable duration: "45 min" or "1 h 30 min".
+  String get formattedDuration {
+    if (durationMinutes < 60) return '$durationMinutes min';
+    final h = durationMinutes ~/ 60;
+    final m = durationMinutes % 60;
+    return m == 0 ? '$h h' : '$h h $m min';
+  }
+
+  /// Human-readable price: "Free" or "\$4.99" (price stored in cents).
+  String get formattedPrice {
+    if (isFree || price == 0) return 'Free';
+    final dollars = price / 100;
+    return '\$${dollars.toStringAsFixed(2)}';
+  }
+
+  /// Capitalised difficulty label for display (e.g. "Easy", "Medium", "Hard").
+  String get difficultyLabel =>
+      '${difficulty.name[0].toUpperCase()}${difficulty.name.substring(1)}';
+
+  /// Convenience: whether this hunt has a valid cover image.
+  bool get hasCoverImage => coverImageUrl.isNotEmpty;
+
   // ── Firestore ─────────────────────────────────────────────────────────────
 
   factory HuntModel.fromFirestore(DocumentSnapshot doc) {
