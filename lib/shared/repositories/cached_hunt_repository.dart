@@ -9,17 +9,9 @@ import '../models/hunt_model.dart';
 import '../services/offline_hunt_cache_service.dart';
 import 'hunt_repository.dart';
 
-/// A [HuntRepository] decorator that adds offline caching.
-///
-/// Strategy:
-/// - **Online reads:** Fetch from [_remote], then write-through to the local
-///   [_cache] so subsequent offline reads are fresh.
-/// - **Offline reads:** When [ConnectivityChecker] reports no connectivity, or
-///   when the remote fetch fails with a [NetworkFailure], serve data from the
-///   local [_cache] instead.
-/// - **Write-through, not write-back:** We never queue mutations. The app is
-///   read-heavy (browse hunts, follow checkpoints), and mutations flow through
-///   [ProgressRepository] which has its own Firestore sync.
+import '../data/seed_hunts.dart';
+
+/// A [HuntRepository] decorator that adds offline caching and seed fallbacks.
 class CachedHuntRepository implements HuntRepository {
   CachedHuntRepository({
     required HuntRepository remote,
@@ -42,28 +34,31 @@ class CachedHuntRepository implements HuntRepository {
   }) async {
     if (await _connectivity.isConnected) {
       final result = await _remote.fetchHunts(city: city, lastDoc: lastDoc);
-      // Write-through: cache each hunt on successful fetch.
       if (result.isSuccess) {
         final hunts = (result as Success<List<HuntModel>>).data;
-        for (final hunt in hunts) {
-          await _cache.cacheHunt(hunt);
+        if (hunts.isNotEmpty) {
+          for (final hunt in hunts) {
+            await _cache.cacheHunt(hunt);
+          }
+          return result;
         }
       }
-      return result;
     }
 
-    // Offline fallback — serve all cached hunts, optionally filtered by city.
-    AppLogger.i('Offline: serving cached hunts', tag: 'CachedHuntRepo');
+    // Serving cached or fallback seed hunts
+    AppLogger.i('Serving cached/seed hunts', tag: 'CachedHuntRepo');
     final cached = await _cache.getCachedHunts();
-    return cached.fold(
-      onSuccess: (hunts) {
-        final filtered = city != null
-            ? hunts.where((h) => h.city == city).toList()
-            : hunts;
-        return Success(filtered);
-      },
-      onErr: (failure) => Err(failure),
-    );
+    final huntsList = cached.dataOrNull ?? const <HuntModel>[];
+    
+    final combined = <HuntModel>{...huntsList, ...SeedHunts.hunts}.toList();
+    for (final h in combined) {
+      await _cache.cacheHunt(h);
+    }
+
+    final filtered = city != null && city.isNotEmpty
+        ? combined.where((h) => h.city == city).toList()
+        : combined;
+    return Success(filtered);
   }
 
   // ── fetchHunt ───────────────────────────────────────────────────────────────
@@ -72,16 +67,22 @@ class CachedHuntRepository implements HuntRepository {
   Future<Result<HuntModel>> fetchHunt(String huntId) async {
     if (await _connectivity.isConnected) {
       final result = await _remote.fetchHunt(huntId);
-      // Write-through.
       if (result.isSuccess) {
         await _cache.cacheHunt((result as Success<HuntModel>).data);
+        return result;
       }
-      return result;
     }
 
-    AppLogger.i('Offline: serving cached hunt $huntId',
-        tag: 'CachedHuntRepo');
-    return _cache.getCachedHunt(huntId);
+    AppLogger.i('Serving cached/seed hunt $huntId', tag: 'CachedHuntRepo');
+    final cached = await _cache.getCachedHunt(huntId);
+    if (cached.isSuccess) return cached;
+
+    final seedMatch = SeedHunts.hunts.where((h) => h.huntId == huntId).firstOrNull;
+    if (seedMatch != null) {
+      await _cache.cacheHunt(seedMatch);
+      return Success(seedMatch);
+    }
+    return const Err(NotFoundFailure('Hunt not found.'));
   }
 
   // ── fetchCheckpoints ────────────────────────────────────────────────────────
@@ -90,18 +91,27 @@ class CachedHuntRepository implements HuntRepository {
   Future<Result<List<CheckpointModel>>> fetchCheckpoints(String huntId) async {
     if (await _connectivity.isConnected) {
       final result = await _remote.fetchCheckpoints(huntId);
-      // Write-through.
       if (result.isSuccess) {
-        final checkpoints =
-            (result as Success<List<CheckpointModel>>).data;
-        await _cache.cacheCheckpoints(huntId, checkpoints);
+        final checkpoints = (result as Success<List<CheckpointModel>>).data;
+        if (checkpoints.isNotEmpty) {
+          await _cache.cacheCheckpoints(huntId, checkpoints);
+          return result;
+        }
       }
-      return result;
     }
 
-    AppLogger.i('Offline: serving cached checkpoints for $huntId',
-        tag: 'CachedHuntRepo');
-    return _cache.getCachedCheckpoints(huntId);
+    AppLogger.i('Serving cached/seed checkpoints for $huntId', tag: 'CachedHuntRepo');
+    final cached = await _cache.getCachedCheckpoints(huntId);
+    if (cached.isSuccess && (cached as Success<List<CheckpointModel>>).data.isNotEmpty) {
+      return cached;
+    }
+
+    final seedCheckpoints = SeedHunts.checkpoints[huntId];
+    if (seedCheckpoints != null && seedCheckpoints.isNotEmpty) {
+      await _cache.cacheCheckpoints(huntId, seedCheckpoints);
+      return Success(seedCheckpoints);
+    }
+    return const Success([]);
   }
 
   // ── getAvailableCities ──────────────────────────────────────────────────────
@@ -109,24 +119,21 @@ class CachedHuntRepository implements HuntRepository {
   @override
   Future<Result<List<String>>> getAvailableCities() async {
     if (await _connectivity.isConnected) {
-      return _remote.getAvailableCities();
+      final result = await _remote.getAvailableCities();
+      if (result.isSuccess && (result as Success<List<String>>).data.isNotEmpty) {
+        return result;
+      }
     }
 
-    // Derive cities from cached hunts.
-    AppLogger.i('Offline: deriving cities from cached hunts',
-        tag: 'CachedHuntRepo');
-    final cached = await _cache.getCachedHunts();
-    return cached.fold(
-      onSuccess: (hunts) {
-        final cities = hunts
-            .map((h) => h.city)
-            .where((c) => c.isNotEmpty)
-            .toSet()
-            .toList()
-          ..sort();
-        return Success(cities);
-      },
-      onErr: (failure) => Err(failure),
-    );
+    AppLogger.i('Deriving cities from cached/seed hunts', tag: 'CachedHuntRepo');
+    final huntsResult = await fetchHunts();
+    final hunts = huntsResult.dataOrNull ?? SeedHunts.hunts;
+    final cities = hunts
+        .map((h) => h.city)
+        .where((c) => c.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+    return Success(cities);
   }
 }
