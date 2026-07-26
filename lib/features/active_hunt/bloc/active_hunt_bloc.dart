@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../../core/error/result.dart';
 import '../../../core/utils/gps_utils.dart';
 import '../../../core/utils/logger.dart';
+import '../../../shared/data/seed_hunts.dart';
 import '../../../shared/models/hunt_progress_model.dart';
 import '../../../shared/repositories/hunt_repository.dart';
 import '../../../shared/repositories/progress_repository.dart';
@@ -198,7 +199,15 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     final current = state as ActiveHuntInProgress;
     final checkpoint = current.currentCheckpoint;
 
-    final targetAnswer = checkpoint.answer ?? '';
+    var targetAnswer = checkpoint.answer ?? '';
+    if (targetAnswer.isEmpty) {
+      final seedList = SeedHunts.checkpoints[current.hunt.huntId];
+      final seedMatch = seedList?.where((c) => c.checkpointId == checkpoint.checkpointId).firstOrNull;
+      if (seedMatch != null && seedMatch.answer != null) {
+        targetAnswer = seedMatch.answer!;
+      }
+    }
+
     final normalizedSubmitted = _normalizeAnswer(event.answer);
     final normalizedTarget = _normalizeAnswer(targetAnswer);
 

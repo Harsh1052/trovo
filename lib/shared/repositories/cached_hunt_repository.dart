@@ -101,12 +101,22 @@ class CachedHuntRepository implements HuntRepository {
     }
 
     AppLogger.i('Serving cached/seed checkpoints for $huntId', tag: 'CachedHuntRepo');
+    final seedCheckpoints = SeedHunts.checkpoints[huntId];
     final cached = await _cache.getCachedCheckpoints(huntId);
-    if (cached.isSuccess && (cached as Success<List<CheckpointModel>>).data.isNotEmpty) {
+    if (cached case Success(:final data) when data.isNotEmpty) {
+      final cachedList = data;
+      if (seedCheckpoints != null && seedCheckpoints.isNotEmpty) {
+        final needsRefresh = cachedList.length != seedCheckpoints.length ||
+            cachedList.any((c) => c.isClue && (c.answer == null || c.answer!.isEmpty));
+        if (needsRefresh) {
+          AppLogger.i('Refreshing stale cached checkpoints with seed data for $huntId', tag: 'CachedHuntRepo');
+          await _cache.cacheCheckpoints(huntId, seedCheckpoints);
+          return Success(seedCheckpoints);
+        }
+      }
       return cached;
     }
 
-    final seedCheckpoints = SeedHunts.checkpoints[huntId];
     if (seedCheckpoints != null && seedCheckpoints.isNotEmpty) {
       await _cache.cacheCheckpoints(huntId, seedCheckpoints);
       return Success(seedCheckpoints);
