@@ -85,79 +85,80 @@ abstract final class SeedHunts {
         huntId: 'surat_diamond_heist',
         orderIndex: 0,
         clueText:
-            'I stand at the grand entrance of Sarthana where the Tapi river breeze greets travelers. Surat is world-famous for cutting and polishing 90% of what precious gemstone?',
+            "Welcome, Detective! In 1670, the royal vault keeper left an encrypted parchment before the blue diamond vanished: 'Where the cool Tapi breeze meets Sarthana's gates, look for the city's crown jewel. 9 out of 10 of these sparkling gems in the world are cut and polished right here in Surat. What gemstone am I?'",
         hintText:
-            'It is the hardest natural substance on Earth. Made of pure carbon under immense pressure.',
+            'It is pure carbon formed under deep mantle pressure. Hardest natural mineral on Earth.',
         latitude: 21.292475,
         longitude: 72.900636,
         type: CheckpointType.clue,
         answer: 'diamond',
         unlockRadius: 20,
         funFact:
-            'Surat processes 9 out of every 10 diamonds set in jewelry globally, making it the Diamond Capital of the World!',
+            'Surat processes 9 out of every 10 diamonds set in jewelry globally! Over 800,000 artisans work in Surat\'s Varachha & Katargam diamond hubs.',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_02',
         huntId: 'surat_diamond_heist',
         orderIndex: 1,
         clueText:
-            'Walk deeper under the lush green canopy of royal banyan and neem trees. Take a victory photo framed by the green foliage and sky!',
+            "The parchment leads under the ancient Banyan Canopy! The 17th-century merchant message reads: 'Under the spreading banyan roots, the vault key bearer hid the first secret chest.' Walk beneath the royal banyan trees, look up at the green canopy, and take a victory photo!",
         hintText:
-            'Follow the main paved pathway past the botanical entrance arch.',
+            'Follow the main shaded pathway 50 meters north of the main entrance.',
         latitude: 21.292900,
         longitude: 72.901100,
         type: CheckpointType.photoTask,
         answer: null,
         unlockRadius: 25,
         funFact:
-            'Sarthana Nature Park spans over 81 acres of rich flora, serving as the green oxygen lung of Surat city.',
+            'Banyan trees (Ficus benghalensis) can live for over 500 years! Sarthana Nature Park spans over 81 acres of rich flora, serving as Surat\'s green lung.',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_03',
         huntId: 'surat_diamond_heist',
         orderIndex: 2,
         clueText:
-            'Look towards the serene waters where Portuguese, Dutch, and Mughal merchant ships once anchored. What sacred river flows through Surat into the Arabian Sea?',
+            "Standing on the riverbank where 17th-century Dutch & Mughal galleons once loaded gold and spices. The merchant's diary reads: 'My ship set sail on the sun-daughter river that carves through Surat into the Gulf of Khambhat.' What sacred river am I?",
         hintText:
-            'Her name starts with T. She is considered the daughter of Surya, the Sun God.',
+            'Her name starts with T. Ancient texts say she is Tapti, the daughter of Surya (the Sun God).',
         latitude: 21.291800,
         longitude: 72.900100,
         type: CheckpointType.clue,
         answer: 'tapi',
         unlockRadius: 20,
         funFact:
-            'The Tapi River flows 724 km from the Satpura Range in Madhya Pradesh before emptying into the Gulf of Khambhat near Surat.',
+            'The Tapi river flows 724 km from Satpura Range to the Arabian Sea. In the 1600s, Surat was India\'s busiest international port along the Tapi!',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_04',
         huntId: 'surat_diamond_heist',
         orderIndex: 3,
         clueText:
-            'In 1670, master craftsmen forged an unbreakable vault key from a precious yellow metal prized by emperors. What metal is it?',
-        hintText: 'Chemical symbol Au. It never tarnishes or rusts.',
+            "You are near the old merchant guild marker. The cipher reveals: 'To open the royal vault, the master goldsmiths forged a key from the yellow metal that never rusts nor tarnishes—prized by Mughal emperors and trade fleets alike.' What metal is it?",
+        hintText:
+            'Chemical element Au (Atomic number 79). Yellow precious bullion metal.',
         latitude: 21.293200,
         longitude: 72.901500,
         type: CheckpointType.clue,
         answer: 'gold',
         unlockRadius: 20,
         funFact:
-            '17th-century Surat was India\'s wealthiest international port, trading fine silk, zari embroidery, and bullion gold.',
+            'In 1670, Surat\'s bullion markets traded tons of gold coins, silver rupees, and zari gold thread with merchants from Arabia and Europe!',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_05',
         huntId: 'surat_diamond_heist',
         orderIndex: 4,
         clueText:
-            'You have reached the final secret vault of Sarthana! Take a photo holding your imaginary key high in the air to complete the quest!',
+            "CONGRATULATIONS, CHIEF DETECTIVE! You have reached the central Sarthana lookout point above the Tapi waters! The royal diamond vault is unlocked! Take your final victory photo holding your key high in the air to recover the lost Royal Diamond of Surat!",
         hintText:
-            'Stand near the central lookout point overlooking the botanical sanctuary.',
+            'Stand at the central elevated lookout pavilion in Sarthana.',
         latitude: 21.292500,
         longitude: 72.900800,
         type: CheckpointType.photoTask,
         answer: null,
         unlockRadius: 30,
         funFact:
-            'Congratulations! You unlocked The Royal Diamond Heist of Surat and earned 500 XP!',
+            'Quest Completed! You recovered the 1670 Royal Diamond of Surat, earned 500 XP, and unlocked the Master Treasure Hunter Trophy!',
       ),
     ],
     'cubbon_park_emerald': [
