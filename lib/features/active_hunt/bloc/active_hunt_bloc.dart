@@ -264,12 +264,42 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   bool _isCloseEnoughAnswer(String submitted, String target) {
     if (submitted.isEmpty || target.isEmpty) return false;
     if (submitted == target) return true;
+
     if (target.length >= 3) {
       if (submitted.contains(target) || target.contains(submitted)) {
         return true;
       }
     }
-    return false;
+
+    // Allow 1-2 character typos (e.g. "daimond" -> "diamond")
+    final distance = _levenshteinDistance(submitted, target);
+    final maxAllowedTypos = target.length <= 4 ? 1 : (target.length <= 8 ? 2 : 3);
+    return distance <= maxAllowedTypos;
+  }
+
+  static int _levenshteinDistance(String s1, String s2) {
+    if (s1 == s2) return 0;
+    if (s1.isEmpty) return s2.length;
+    if (s2.isEmpty) return s2.length;
+
+    final v0 = List<int>.generate(s2.length + 1, (i) => i);
+    final v1 = List<int>.filled(s2.length + 1, 0);
+
+    for (var i = 0; i < s1.length; i++) {
+      v1[0] = i + 1;
+      for (var j = 0; j < s2.length; j++) {
+        final cost = (s1[i] == s2[j]) ? 0 : 1;
+        v1[j + 1] = [
+          v1[j] + 1,
+          v0[j + 1] + 1,
+          v0[j] + cost,
+        ].reduce((a, b) => a < b ? a : b);
+      }
+      for (var j = 0; j <= s2.length; j++) {
+        v0[j] = v1[j];
+      }
+    }
+    return v1[s2.length];
   }
 
   Future<void> _onPhotoSubmitted(
