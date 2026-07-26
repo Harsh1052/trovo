@@ -24,13 +24,21 @@ class LetterBoxInput extends StatefulWidget {
 
 class _LetterBoxInputState extends State<LetterBoxInput> {
   late final TextEditingController _controller;
-  final int _maxLength = 20;
+  final int _maxLength = 30;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _controller.addListener(() => widget.onChanged(_controller.text));
+  }
+
+  @override
+  void didUpdateWidget(LetterBoxInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.answer != widget.answer) {
+      _controller.clear();
+    }
   }
 
   @override
@@ -41,7 +49,8 @@ class _LetterBoxInputState extends State<LetterBoxInput> {
 
   @override
   Widget build(BuildContext context) {
-    final answerLen = widget.answer.replaceAll(' ', '').length.clamp(1, _maxLength);
+    final cleanAnswer = widget.answer.replaceAll(' ', '');
+    final answerLen = cleanAnswer.isEmpty ? 1 : cleanAnswer.length.clamp(1, _maxLength);
     final typed = _controller.text.replaceAll(' ', '');
 
     return Column(
@@ -87,7 +96,7 @@ class _LetterBoxInputState extends State<LetterBoxInput> {
         const SizedBox(height: AppDimensions.spaceM),
         TextField(
           controller: _controller,
-          maxLength: answerLen,
+          maxLength: (widget.answer.length + 5).clamp(1, 40),
           textCapitalization: TextCapitalization.characters,
           decoration: InputDecoration(
             hintText: 'Type your answer…',

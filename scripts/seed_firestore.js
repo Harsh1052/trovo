@@ -25,12 +25,11 @@ const fs = require("fs");
 const serviceAccountPath = path.join(__dirname, "serviceAccountKey.json");
 
 if (fs.existsSync(serviceAccountPath)) {
-  initializeApp({ credential: cert(require(serviceAccountPath)) });
+  initializeApp({ credential: cert(require(serviceAccountPath)), projectId: "trovo-prod-app" });
   console.log("🔑  Using serviceAccountKey.json");
 } else {
-  // Falls back to GOOGLE_APPLICATION_CREDENTIALS or gcloud default credentials.
-  console.log("ℹ️  No serviceAccountKey.json found — using default credentials.");
-  initializeApp();
+  console.log("ℹ️  No serviceAccountKey.json found — using projectId: trovo-prod-app");
+  initializeApp({ projectId: "trovo-prod-app" });
 }
 
 const db = getFirestore();

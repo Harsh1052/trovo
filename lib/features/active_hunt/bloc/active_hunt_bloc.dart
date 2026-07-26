@@ -198,8 +198,13 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     final current = state as ActiveHuntInProgress;
     final checkpoint = current.currentCheckpoint;
 
-    final isCorrect = event.answer.trim().toLowerCase() ==
-        (checkpoint.answer?.trim().toLowerCase() ?? '');
+    final targetAnswer = checkpoint.answer ?? '';
+    final normalizedSubmitted = _normalizeAnswer(event.answer);
+    final normalizedTarget = _normalizeAnswer(targetAnswer);
+
+    final isCorrect = normalizedTarget.isNotEmpty &&
+        (normalizedSubmitted == normalizedTarget ||
+            _isCloseEnoughAnswer(normalizedSubmitted, normalizedTarget));
 
     if (!isCorrect) {
       emit(current.copyWith(isAnswerWrong: true));
@@ -218,6 +223,18 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     // }
 
     await _advanceCheckpoint(current, emit);
+  }
+
+  String _normalizeAnswer(String input) {
+    return input.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+  }
+
+  bool _isCloseEnoughAnswer(String submitted, String target) {
+    if (submitted == target) return true;
+    if (target.length >= 4 && (submitted.contains(target) || target.contains(submitted))) {
+      return true;
+    }
+    return false;
   }
 
   Future<void> _onPhotoSubmitted(

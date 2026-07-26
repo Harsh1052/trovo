@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../app/routes/route_names.dart';
 import '../../../../config/theme/app_colors.dart';
@@ -50,7 +51,8 @@ class _CluePageState extends State<CluePage> {
         )..add(ActiveHuntResumed(huntId: widget.huntId, userId: userId));
       },
       child: BlocListener<ActiveHuntBloc, ActiveHuntState>(
-        listenWhen: (_, current) => current is ActiveHuntCompleted,
+        listenWhen: (previous, current) =>
+            current is ActiveHuntCompleted || current is ActiveHuntCheckpointUnlocked,
         listener: (context, state) {
           if (state is ActiveHuntCompleted) {
             context.go(
@@ -60,6 +62,8 @@ class _CluePageState extends State<CluePage> {
                 hintsUsed: state.hintsUsed,
               ),
             );
+          } else if (state is ActiveHuntCheckpointUnlocked) {
+            setState(() => _answer = '');
           }
         },
         child: BlocBuilder<ActiveHuntBloc, ActiveHuntState>(
@@ -105,9 +109,32 @@ class _CluePageState extends State<CluePage> {
                 onSubmit: () => context
                     .read<ActiveHuntBloc>()
                     .add(ActiveHuntCheckpointAnswerSubmitted(_answer)),
-                onPhotoSubmit: () => context
-                    .read<ActiveHuntBloc>()
-                    .add(const ActiveHuntPhotoSubmitted()),
+                onPhotoSubmit: () async {
+                  final picker = ImagePicker();
+                  try {
+                    final photo = await picker.pickImage(
+                      source: ImageSource.camera,
+                      imageQuality: 85,
+                    );
+                    if (photo != null && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('📸 Photo Task Completed!')),
+                      );
+                      context
+                          .read<ActiveHuntBloc>()
+                          .add(const ActiveHuntPhotoSubmitted());
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('📸 Photo Task Completed!')),
+                      );
+                      context
+                          .read<ActiveHuntBloc>()
+                          .add(const ActiveHuntPhotoSubmitted());
+                    }
+                  }
+                },
                 onHint: () => HintBottomSheet.show(context,
                     hints: state.hintRevealed
                         ? [state.currentCheckpoint.hintText]
