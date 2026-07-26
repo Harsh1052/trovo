@@ -9,6 +9,23 @@
 
   "hunts": [
     {
+      "_docId": "surat_diamond_heist",
+      "title": "The Royal Diamond Heist of Surat",
+      "description": "In 1670, a legendary blue diamond disappeared from the royal vaults along the Tapi River. Solve 5 encrypted merchant ciphers hidden across Sarthana's lush botanical gardens and riverwalk to unlock the royal vault!",
+      "city": "Surat",
+      "gardenName": "Sarthana Nature Park & Riverwalk",
+      "difficulty": "medium",
+      "durationMinutes": 60,
+      "checkpointCount": 5,
+      "isFree": true,
+      "price": 0,
+      "coverImageUrl": "assets/images/cover_surat.png",
+      "startLatitude": 21.292475,
+      "startLongitude": 72.900636,
+      "isActive": true,
+      "createdAt": "2026-07-26T15:00:00.000Z"
+    },
+    {
       "_docId": "panchvati_garden",
       "title": "Panchvati Heritage Trail",
       "description": "Follow the footsteps of the Ramayana along the sacred ghats and temples of ancient Panchvati. Solve eight riddles hidden across Nashik's most storied quarter — from the holy waters of Ramkund to the arched bridge above the Godavari.",

@@ -12,3 +12,8 @@
 
 - MR-03: Java Desugaring for Android Builds
   - Ensure `isCoreLibraryDesugaringEnabled = true` and `desugar_jdk_libs` dependency are included in `android/app/build.gradle.kts` whenever local notification or date-time packages are added.
+
+- MR-04: Local-First Commits (No Automatic Remote Push)
+  - NEVER execute `git push` automatically after local edits or commits.
+  - Keep all code changes, tests, and commits strictly on the local machine.
+  - ONLY run `git push` to remote origin when the user explicitly requests a push.
