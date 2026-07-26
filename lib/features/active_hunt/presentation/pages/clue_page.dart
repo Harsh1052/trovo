@@ -246,13 +246,23 @@ class _ClueContent extends StatelessWidget {
                       ClipRRect(
                         borderRadius:
                             BorderRadius.circular(AppDimensions.radiusM),
-                        child: Image.asset(
-                          checkpoint.imageUrl!,
-                          width: double.infinity,
-                          height: 180,
-                          fit: BoxFit.cover,
-                          errorBuilder: (ctx, err, stack) => const SizedBox.shrink(),
-                        ),
+                        child: checkpoint.imageUrl!.startsWith('http')
+                            ? Image.network(
+                                checkpoint.imageUrl!,
+                                width: double.infinity,
+                                height: 180,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) =>
+                                    const SizedBox.shrink(),
+                              )
+                            : Image.asset(
+                                checkpoint.imageUrl!,
+                                width: double.infinity,
+                                height: 180,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) =>
+                                    const SizedBox.shrink(),
+                              ),
                       ),
                       const SizedBox(height: AppDimensions.spaceM),
                     ],
