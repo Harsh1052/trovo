@@ -22,11 +22,11 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     required ProgressRepository progressRepository,
     required LocationService locationService,
     required AnalyticsService analyticsService,
-  })  : _huntRepository = huntRepository,
-        _progressRepository = progressRepository,
-        _locationService = locationService,
-        _analyticsService = analyticsService,
-        super(const ActiveHuntInitial()) {
+  }) : _huntRepository = huntRepository,
+       _progressRepository = progressRepository,
+       _locationService = locationService,
+       _analyticsService = analyticsService,
+       super(const ActiveHuntInitial()) {
     on<ActiveHuntStarted>(_onStarted);
     on<ActiveHuntResumed>(_onResumed);
     on<ActiveHuntLocationUpdated>(_onLocationUpdated);
@@ -51,33 +51,47 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   // ── Event handlers ────────────────────────────────────────────────────────
 
   Future<void> _onStarted(
-      ActiveHuntStarted event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntStarted event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     emit(const ActiveHuntLoading());
 
     // Fetch hunt metadata and checkpoints in parallel.
-    final (huntResult, checkpointsResult) = await (
-      _huntRepository.fetchHunt(event.huntId),
-      _huntRepository.fetchCheckpoints(event.huntId),
-    ).wait;
+    final (huntResult, checkpointsResult) =
+        await (
+          _huntRepository.fetchHunt(event.huntId),
+          _huntRepository.fetchCheckpoints(event.huntId),
+        ).wait;
 
     if (huntResult case Err(:final failure)) {
-      AppLogger.e('ActiveHunt: fetch hunt failed',
-          tag: _tag, error: failure.message);
+      AppLogger.e(
+        'ActiveHunt: fetch hunt failed',
+        tag: _tag,
+        error: failure.message,
+      );
       emit(ActiveHuntError(failure.userFriendlyMessage));
       return;
     }
     if (checkpointsResult case Err(:final failure)) {
-      AppLogger.e('ActiveHunt: fetch checkpoints failed',
-          tag: _tag, error: failure.message);
+      AppLogger.e(
+        'ActiveHunt: fetch checkpoints failed',
+        tag: _tag,
+        error: failure.message,
+      );
       emit(ActiveHuntError(failure.userFriendlyMessage));
       return;
     }
 
-    final progressResult =
-        await _progressRepository.startHunt(event.userId, event.huntId);
+    final progressResult = await _progressRepository.startHunt(
+      event.userId,
+      event.huntId,
+    );
     if (progressResult case Err(:final failure)) {
-      AppLogger.e('ActiveHunt: start hunt failed',
-          tag: _tag, error: failure.message);
+      AppLogger.e(
+        'ActiveHunt: start hunt failed',
+        tag: _tag,
+        error: failure.message,
+      );
       emit(ActiveHuntError(failure.userFriendlyMessage));
       return;
     }
@@ -92,12 +106,14 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    emit(ActiveHuntInProgress(
-      hunt: hunt,
-      checkpoints: checkpoints,
-      progress: progress,
-      elapsed: Duration.zero,
-    ));
+    emit(
+      ActiveHuntInProgress(
+        hunt: hunt,
+        checkpoints: checkpoints,
+        progress: progress,
+        elapsed: Duration.zero,
+      ),
+    );
 
     _startTimer();
     await _startLocationTracking(
@@ -110,13 +126,16 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   }
 
   Future<void> _onResumed(
-      ActiveHuntResumed event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntResumed event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     emit(const ActiveHuntLoading());
 
-    final (huntResult, checkpointsResult) = await (
-      _huntRepository.fetchHunt(event.huntId),
-      _huntRepository.fetchCheckpoints(event.huntId),
-    ).wait;
+    final (huntResult, checkpointsResult) =
+        await (
+          _huntRepository.fetchHunt(event.huntId),
+          _huntRepository.fetchCheckpoints(event.huntId),
+        ).wait;
 
     if (huntResult case Err(:final failure)) {
       emit(ActiveHuntError(failure.userFriendlyMessage));
@@ -127,8 +146,10 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
       return;
     }
 
-    final progressResult =
-        await _progressRepository.fetchProgress(event.userId, event.huntId);
+    final progressResult = await _progressRepository.fetchProgress(
+      event.userId,
+      event.huntId,
+    );
     if (progressResult case Err(:final failure)) {
       emit(ActiveHuntError(failure.userFriendlyMessage));
       return;
@@ -139,7 +160,10 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
 
     if (fetchedProgress == null || !fetchedProgress.isActive) {
       // Missing progress doc means they UI skipped ActiveHuntStarted or cleared it. Auto-fix.
-      final startResult = await _progressRepository.startHunt(event.userId, event.huntId);
+      final startResult = await _progressRepository.startHunt(
+        event.userId,
+        event.huntId,
+      );
       if (startResult case Err(:final failure)) {
         emit(ActiveHuntError(failure.userFriendlyMessage));
         return;
@@ -155,12 +179,14 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     // Reconstruct elapsed time from the persisted startedAt timestamp.
     final elapsed = DateTime.now().difference(progress.startedAt);
 
-    emit(ActiveHuntInProgress(
-      hunt: hunt,
-      checkpoints: checkpoints,
-      progress: progress,
-      elapsed: elapsed,
-    ));
+    emit(
+      ActiveHuntInProgress(
+        hunt: hunt,
+        checkpoints: checkpoints,
+        progress: progress,
+        elapsed: elapsed,
+      ),
+    );
 
     _startTimer();
     await _startLocationTracking(
@@ -171,7 +197,9 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   }
 
   void _onLocationUpdated(
-      ActiveHuntLocationUpdated event, Emitter<ActiveHuntState> emit) {
+    ActiveHuntLocationUpdated event,
+    Emitter<ActiveHuntState> emit,
+  ) {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
     final checkpoint = current.currentCheckpoint;
@@ -182,20 +210,22 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
       checkpoint.latitude,
       checkpoint.longitude,
     );
-    final isWithin =
-        distance <= checkpoint.unlockRadius.toDouble();
+    final isWithin = distance <= checkpoint.unlockRadius.toDouble();
 
-    emit(current.copyWith(
-      currentLat: event.latitude,
-      currentLng: event.longitude,
-      distanceToCheckpoint: distance,
-      isWithinRange: isWithin,
-    ));
+    emit(
+      current.copyWith(
+        currentLat: event.latitude,
+        currentLng: event.longitude,
+        distanceToCheckpoint: distance,
+        isWithinRange: isWithin,
+      ),
+    );
   }
 
   Future<void> _onAnswerSubmitted(
-      ActiveHuntCheckpointAnswerSubmitted event,
-      Emitter<ActiveHuntState> emit) async {
+    ActiveHuntCheckpointAnswerSubmitted event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
     final checkpoint = current.currentCheckpoint;
@@ -203,7 +233,10 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     var targetAnswer = checkpoint.answer ?? '';
     if (targetAnswer.isEmpty) {
       final seedList = SeedHunts.checkpoints[current.hunt.huntId];
-      final seedMatch = seedList?.where((c) => c.checkpointId == checkpoint.checkpointId).firstOrNull;
+      final seedMatch =
+          seedList
+              ?.where((c) => c.checkpointId == checkpoint.checkpointId)
+              .firstOrNull;
       if (seedMatch != null && seedMatch.answer != null) {
         targetAnswer = seedMatch.answer!;
       }
@@ -212,13 +245,16 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     final normalizedSubmitted = _normalizeAnswer(event.answer);
     final normalizedTarget = _normalizeAnswer(targetAnswer);
 
-    final isCorrect = normalizedTarget.isNotEmpty &&
+    final isCorrect =
+        normalizedTarget.isNotEmpty &&
         (normalizedSubmitted == normalizedTarget ||
             _isCloseEnoughAnswer(normalizedSubmitted, normalizedTarget));
 
     debugPrint('🔍 [HUNT_DEBUG] Submit Answer Event Triggered:');
     debugPrint('   ├─ Hunt ID: ${current.hunt.huntId}');
-    debugPrint('   ├─ Checkpoint ID: ${checkpoint.checkpointId} (Order: ${checkpoint.orderIndex})');
+    debugPrint(
+      '   ├─ Checkpoint ID: ${checkpoint.checkpointId} (Order: ${checkpoint.orderIndex})',
+    );
     debugPrint('   ├─ Raw Submitted Answer: "${event.answer}"');
     debugPrint('   ├─ Raw Target Answer (Model): "${checkpoint.answer}"');
     debugPrint('   ├─ Target Answer Used: "$targetAnswer"');
@@ -264,46 +300,18 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   bool _isCloseEnoughAnswer(String submitted, String target) {
     if (submitted.isEmpty || target.isEmpty) return false;
     if (submitted == target) return true;
-
     if (target.length >= 3) {
       if (submitted.contains(target) || target.contains(submitted)) {
         return true;
       }
     }
-
-    // Allow 1-2 character typos (e.g. "daimond" -> "diamond")
-    final distance = _levenshteinDistance(submitted, target);
-    final maxAllowedTypos = target.length <= 4 ? 1 : (target.length <= 8 ? 2 : 3);
-    return distance <= maxAllowedTypos;
-  }
-
-  static int _levenshteinDistance(String s1, String s2) {
-    if (s1 == s2) return 0;
-    if (s1.isEmpty) return s2.length;
-    if (s2.isEmpty) return s2.length;
-
-    final v0 = List<int>.generate(s2.length + 1, (i) => i);
-    final v1 = List<int>.filled(s2.length + 1, 0);
-
-    for (var i = 0; i < s1.length; i++) {
-      v1[0] = i + 1;
-      for (var j = 0; j < s2.length; j++) {
-        final cost = (s1[i] == s2[j]) ? 0 : 1;
-        v1[j + 1] = [
-          v1[j] + 1,
-          v0[j + 1] + 1,
-          v0[j] + cost,
-        ].reduce((a, b) => a < b ? a : b);
-      }
-      for (var j = 0; j <= s2.length; j++) {
-        v0[j] = v1[j];
-      }
-    }
-    return v1[s2.length];
+    return false;
   }
 
   Future<void> _onPhotoSubmitted(
-      ActiveHuntPhotoSubmitted event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntPhotoSubmitted event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
 
@@ -320,7 +328,9 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   }
 
   Future<void> _onHintRequested(
-      ActiveHuntHintRequested event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntHintRequested event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
 
@@ -336,41 +346,51 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     }
 
     _analyticsService.logHintUsed(
-        current.hunt.huntId, current.currentCheckpointIndex);
+      current.hunt.huntId,
+      current.currentCheckpointIndex,
+    );
 
-    final updatedProgress =
-        current.progress.copyWith(hintsUsed: current.hintsUsed + 1);
+    final updatedProgress = current.progress.copyWith(
+      hintsUsed: current.hintsUsed + 1,
+    );
 
     // Persist hint usage — non-fatal if it fails.
     final saveResult = await _progressRepository.saveProgress(updatedProgress);
     if (saveResult case Err(:final failure)) {
-      AppLogger.w('ActiveHunt: failed to save hint usage',
-          tag: _tag, error: failure.message);
+      AppLogger.w(
+        'ActiveHunt: failed to save hint usage',
+        tag: _tag,
+        error: failure.message,
+      );
     }
 
-    emit(current.copyWith(
-      hintRevealed: true,
-      progress: updatedProgress,
-    ));
+    emit(current.copyWith(hintRevealed: true, progress: updatedProgress));
   }
 
   void _onTimerTicked(
-      ActiveHuntTimerTicked event, Emitter<ActiveHuntState> emit) {
+    ActiveHuntTimerTicked event,
+    Emitter<ActiveHuntState> emit,
+  ) {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
-    emit(current.copyWith(
-        elapsed: current.elapsed + const Duration(seconds: 1)));
+    emit(
+      current.copyWith(elapsed: current.elapsed + const Duration(seconds: 1)),
+    );
   }
 
   void _onMapToggled(
-      ActiveHuntMapToggled event, Emitter<ActiveHuntState> emit) {
+    ActiveHuntMapToggled event,
+    Emitter<ActiveHuntState> emit,
+  ) {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
     emit(current.copyWith(showMap: !current.showMap));
   }
 
   Future<void> _onAbandoned(
-      ActiveHuntAbandoned event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntAbandoned event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     if (state is ActiveHuntInProgress) {
       final current = state as ActiveHuntInProgress;
 
@@ -380,8 +400,7 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
         elapsedSeconds: current.elapsed.inSeconds,
       );
 
-      final abandoned =
-          current.progress.copyWith(status: HuntStatus.abandoned);
+      final abandoned = current.progress.copyWith(status: HuntStatus.abandoned);
       await _progressRepository.saveProgress(abandoned);
     }
     _stopTracking();
@@ -392,7 +411,9 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   /// Unlocks the current checkpoint and either advances to the next or
   /// completes the hunt.
   Future<void> _advanceCheckpoint(
-      ActiveHuntInProgress current, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntInProgress current,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     final completedIndex = current.currentCheckpointIndex;
     final nextIndex = completedIndex + 1;
     final newTimestamps = {
@@ -415,8 +436,11 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
 
       final saveResult = await _progressRepository.saveProgress(finalProgress);
       if (saveResult case Err(:final failure)) {
-        AppLogger.e('ActiveHunt: save final progress failed',
-            tag: _tag, error: failure.message);
+        AppLogger.e(
+          'ActiveHunt: save final progress failed',
+          tag: _tag,
+          error: failure.message,
+        );
         // Non-fatal: show completion screen regardless.
       }
 
@@ -428,22 +452,26 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
         hintsUsed: finalProgress.hintsUsed,
       );
 
-      emit(ActiveHuntCompleted(
-        progress: finalProgress,
-        totalTime: current.elapsed,
-        hintsUsed: finalProgress.hintsUsed,
-      ));
+      emit(
+        ActiveHuntCompleted(
+          progress: finalProgress,
+          totalTime: current.elapsed,
+          hintsUsed: finalProgress.hintsUsed,
+        ),
+      );
       return;
     }
 
     // ── Checkpoint unlocked, more to go ───────────────────────────────────
     final nextCheckpoint = current.checkpoints[nextIndex];
 
-    emit(ActiveHuntCheckpointUnlocked(
-      checkpointIndex: completedIndex,
-      totalCheckpoints: current.checkpoints.length,
-      nextCheckpoint: nextCheckpoint,
-    ));
+    emit(
+      ActiveHuntCheckpointUnlocked(
+        checkpointIndex: completedIndex,
+        totalCheckpoints: current.checkpoints.length,
+        nextCheckpoint: nextCheckpoint,
+      ),
+    );
 
     // Celebration screen auto-dismisses after 2 seconds.
     await Future.delayed(const Duration(seconds: 2));
@@ -455,17 +483,22 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
 
     final saveResult = await _progressRepository.saveProgress(updatedProgress);
     if (saveResult case Err(:final failure)) {
-      AppLogger.e('ActiveHunt: save progress failed',
-          tag: _tag, error: failure.message);
+      AppLogger.e(
+        'ActiveHunt: save progress failed',
+        tag: _tag,
+        error: failure.message,
+      );
       // Non-fatal: continue with in-memory progress.
     }
 
-    emit(current.copyWith(
-      progress: updatedProgress,
-      hintRevealed: false,
-      isAnswerWrong: false,
-      feedbackMessage: null,
-    ));
+    emit(
+      current.copyWith(
+        progress: updatedProgress,
+        hintRevealed: false,
+        isAnswerWrong: false,
+        feedbackMessage: null,
+      ),
+    );
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -483,9 +516,9 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   /// If denied → emits [ActiveHuntLocationDenied] so the UI can show the
   /// permission-denied screen with contextual CTA.
   Future<void> _startLocationTracking(
-      Emitter<ActiveHuntState> emit, {
-      required String huntId,
-      required String userId,
+    Emitter<ActiveHuntState> emit, {
+    required String huntId,
+    required String userId,
   }) async {
     final hasPermission = await _locationService.requestPermission();
 
@@ -499,21 +532,26 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
         tag: _tag,
       );
 
-      emit(ActiveHuntLocationDenied(
-        huntId: huntId,
-        userId: userId,
-        isPermanentlyDenied: isPermanent,
-      ));
+      emit(
+        ActiveHuntLocationDenied(
+          huntId: huntId,
+          userId: userId,
+          isPermanentlyDenied: isPermanent,
+        ),
+      );
       return;
     }
 
     _locationSubscription?.cancel();
-    _locationSubscription =
-        _locationService.startTrackingForHunt().listen((position) {
-      add(ActiveHuntLocationUpdated(
-        latitude: position.latitude,
-        longitude: position.longitude,
-      ));
+    _locationSubscription = _locationService.startTrackingForHunt().listen((
+      position,
+    ) {
+      add(
+        ActiveHuntLocationUpdated(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        ),
+      );
     });
   }
 
@@ -522,7 +560,9 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   /// Re-requests permission and, if granted, re-dispatches the
   /// [ActiveHuntResumed] event to reload hunt data and start tracking.
   Future<void> _onLocationRetried(
-      ActiveHuntLocationRetried event, Emitter<ActiveHuntState> emit) async {
+    ActiveHuntLocationRetried event,
+    Emitter<ActiveHuntState> emit,
+  ) async {
     if (state is! ActiveHuntLocationDenied) return;
     final denied = state as ActiveHuntLocationDenied;
 
@@ -532,10 +572,7 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     }
 
     // Re-trigger the full hunt resume flow (which will re-check permission).
-    add(ActiveHuntResumed(
-      huntId: denied.huntId,
-      userId: denied.userId,
-    ));
+    add(ActiveHuntResumed(huntId: denied.huntId, userId: denied.userId));
   }
 
   void _stopTracking() {
