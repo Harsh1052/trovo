@@ -135,13 +135,7 @@ class _CluePageState extends State<CluePage> {
                     }
                   }
                 },
-                onHint: () => HintBottomSheet.show(context,
-                    hints: state.hintRevealed
-                        ? [state.currentCheckpoint.hintText]
-                        : [],
-                    onReveal: () => context
-                        .read<ActiveHuntBloc>()
-                        .add(const ActiveHuntHintRequested())),
+                onHint: () => HintBottomSheet.show(context),
               ),
             // ActiveHuntCompleted is handled by BlocListener above (navigation).
             ActiveHuntCompleted() =>

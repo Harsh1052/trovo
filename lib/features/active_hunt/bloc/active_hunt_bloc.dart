@@ -259,9 +259,6 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     if (state is! ActiveHuntInProgress) return;
     final current = state as ActiveHuntInProgress;
 
-    // No hint configured for this checkpoint.
-    if (current.currentCheckpoint.hintText.isEmpty) return;
-
     // Hint already revealed for this checkpoint.
     if (current.hintRevealed) return;
 
