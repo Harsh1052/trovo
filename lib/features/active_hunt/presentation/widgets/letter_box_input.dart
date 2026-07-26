@@ -11,11 +11,13 @@ class LetterBoxInput extends StatefulWidget {
     super.key,
     required this.answer,
     required this.onChanged,
+    this.controller,
     this.isWrong = false,
   });
 
   final String answer;
   final ValueChanged<String> onChanged;
+  final TextEditingController? controller;
   final bool isWrong;
 
   @override
@@ -23,14 +25,21 @@ class LetterBoxInput extends StatefulWidget {
 }
 
 class _LetterBoxInputState extends State<LetterBoxInput> {
-  late final TextEditingController _controller;
+  late final TextEditingController _internalController;
   final int _maxLength = 30;
+
+  TextEditingController get _controller => widget.controller ?? _internalController;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
-    _controller.addListener(() => widget.onChanged(_controller.text));
+    _internalController = TextEditingController();
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    widget.onChanged(_controller.text);
+    if (mounted) setState(() {});
   }
 
   @override
@@ -43,7 +52,10 @@ class _LetterBoxInputState extends State<LetterBoxInput> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.removeListener(_onTextChanged);
+    if (widget.controller == null) {
+      _internalController.dispose();
+    }
     super.dispose();
   }
 

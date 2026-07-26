@@ -226,13 +226,28 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
   }
 
   String _normalizeAnswer(String input) {
-    return input.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    var cleaned = input.trim().toLowerCase();
+    cleaned = cleaned
+        .replaceAll('0', 'zero')
+        .replaceAll('1', 'one')
+        .replaceAll('2', 'two')
+        .replaceAll('3', 'three')
+        .replaceAll('4', 'four')
+        .replaceAll('5', 'five')
+        .replaceAll('6', 'six')
+        .replaceAll('7', 'seven')
+        .replaceAll('8', 'eight')
+        .replaceAll('9', 'nine');
+    return cleaned.replaceAll(RegExp(r'[^a-z0-9]'), '');
   }
 
   bool _isCloseEnoughAnswer(String submitted, String target) {
+    if (submitted.isEmpty || target.isEmpty) return false;
     if (submitted == target) return true;
-    if (target.length >= 4 && (submitted.contains(target) || target.contains(submitted))) {
-      return true;
+    if (target.length >= 3) {
+      if (submitted.contains(target) || target.contains(submitted)) {
+        return true;
+      }
     }
     return false;
   }

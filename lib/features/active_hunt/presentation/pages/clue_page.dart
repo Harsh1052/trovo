@@ -35,7 +35,19 @@ class CluePage extends StatefulWidget {
 }
 
 class _CluePageState extends State<CluePage> {
-  String _answer = '';
+  late final TextEditingController _answerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _answerController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _answerController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +75,7 @@ class _CluePageState extends State<CluePage> {
               ),
             );
           } else if (state is ActiveHuntCheckpointUnlocked) {
-            setState(() => _answer = '');
+            _answerController.clear();
           }
         },
         child: BlocBuilder<ActiveHuntBloc, ActiveHuntState>(
@@ -104,11 +116,10 @@ class _CluePageState extends State<CluePage> {
               ),
             ActiveHuntInProgress() => _ClueContent(
                 state: state,
-                answer: _answer,
-                onAnswerChanged: (v) => setState(() => _answer = v),
+                controller: _answerController,
                 onSubmit: () => context
                     .read<ActiveHuntBloc>()
-                    .add(ActiveHuntCheckpointAnswerSubmitted(_answer)),
+                    .add(ActiveHuntCheckpointAnswerSubmitted(_answerController.text)),
                 onPhotoSubmit: () async {
                   final picker = ImagePicker();
                   try {
@@ -150,16 +161,14 @@ class _CluePageState extends State<CluePage> {
 class _ClueContent extends StatelessWidget {
   const _ClueContent({
     required this.state,
-    required this.answer,
-    required this.onAnswerChanged,
+    required this.controller,
     required this.onSubmit,
     required this.onPhotoSubmit,
     required this.onHint,
   });
 
   final ActiveHuntInProgress state;
-  final String answer;
-  final ValueChanged<String> onAnswerChanged;
+  final TextEditingController controller;
   final VoidCallback onSubmit;
   final VoidCallback onPhotoSubmit;
   final VoidCallback onHint;
@@ -234,8 +243,9 @@ class _ClueContent extends StatelessWidget {
                 const SizedBox(height: AppDimensions.spaceM),
                 LetterBoxInput(
                   answer: checkpoint.answer ?? '',
+                  controller: controller,
                   isWrong: state.isAnswerWrong,
-                  onChanged: onAnswerChanged,
+                  onChanged: (_) {},
                 ),
                 const SizedBox(height: AppDimensions.spaceXL),
                 HMButton.primary(
