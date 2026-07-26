@@ -95,6 +95,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'Surat processes 9 out of every 10 diamonds set in jewelry globally! Over 800,000 artisans work in Surat\'s Varachha & Katargam diamond hubs.',
+        imageUrl: 'assets/images/surat_cp1_diamond_gate.png',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_02',
@@ -111,6 +112,7 @@ abstract final class SeedHunts {
         unlockRadius: 25,
         funFact:
             'Banyan trees (Ficus benghalensis) can live for over 500 years! Sarthana Nature Park spans over 81 acres of rich flora, serving as Surat\'s green lung.',
+        imageUrl: 'assets/images/surat_cp2_banyan_canopy.png',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_03',
@@ -127,6 +129,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'The Tapi river flows 724 km from Satpura Range to the Arabian Sea. In the 1600s, Surat was India\'s busiest international port along the Tapi!',
+        imageUrl: 'assets/images/surat_cp3_tapi_lookout.png',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_04',
@@ -143,6 +146,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'In 1670, Surat\'s bullion markets traded tons of gold coins, silver rupees, and zari gold thread with merchants from Arabia and Europe!',
+        imageUrl: 'assets/images/surat_cp4_merchant_cipher.png',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_05',
@@ -159,6 +163,7 @@ abstract final class SeedHunts {
         unlockRadius: 30,
         funFact:
             'Quest Completed! You recovered the 1670 Royal Diamond of Surat, earned 500 XP, and unlocked the Master Treasure Hunter Trophy!',
+        imageUrl: 'assets/images/surat_cp5_royal_vault.png',
       ),
     ],
     'cubbon_park_emerald': [

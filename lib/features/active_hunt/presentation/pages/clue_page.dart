@@ -238,8 +238,28 @@ class _ClueContent extends StatelessWidget {
                   border: Border.all(
                       color: AppColors.primary.withValues(alpha: 0.2)),
                 ),
-                child: Text(checkpoint.clueText,
-                    style: AppTypography.bodyLarge),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (checkpoint.imageUrl != null &&
+                        checkpoint.imageUrl!.isNotEmpty) ...[
+                      ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusM),
+                        child: Image.asset(
+                          checkpoint.imageUrl!,
+                          width: double.infinity,
+                          height: 180,
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, err, stack) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SizedBox(height: AppDimensions.spaceM),
+                    ],
+                    Text(checkpoint.clueText,
+                        style: AppTypography.bodyLarge),
+                  ],
+                ),
               ),
               const SizedBox(height: AppDimensions.spaceXL),
               if (checkpoint.type == CheckpointType.clue) ...[
