@@ -117,9 +117,14 @@ class _CluePageState extends State<CluePage> {
             ActiveHuntInProgress() => _ClueContent(
                 state: state,
                 controller: _answerController,
-                onSubmit: () => context
-                    .read<ActiveHuntBloc>()
-                    .add(ActiveHuntCheckpointAnswerSubmitted(_answerController.text)),
+                onSubmit: () {
+                  final typedText = _answerController.text;
+                  debugPrint('🔍 [UI_DEBUG] Submit Button Tapped on CluePage!');
+                  debugPrint('   ├─ Controller Text: "$typedText"');
+                  context
+                      .read<ActiveHuntBloc>()
+                      .add(ActiveHuntCheckpointAnswerSubmitted(typedText));
+                },
                 onPhotoSubmit: () async {
                   final picker = ImagePicker();
                   try {

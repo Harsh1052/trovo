@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -214,6 +215,16 @@ class ActiveHuntBloc extends Bloc<ActiveHuntEvent, ActiveHuntState> {
     final isCorrect = normalizedTarget.isNotEmpty &&
         (normalizedSubmitted == normalizedTarget ||
             _isCloseEnoughAnswer(normalizedSubmitted, normalizedTarget));
+
+    debugPrint('🔍 [HUNT_DEBUG] Submit Answer Event Triggered:');
+    debugPrint('   ├─ Hunt ID: ${current.hunt.huntId}');
+    debugPrint('   ├─ Checkpoint ID: ${checkpoint.checkpointId} (Order: ${checkpoint.orderIndex})');
+    debugPrint('   ├─ Raw Submitted Answer: "${event.answer}"');
+    debugPrint('   ├─ Raw Target Answer (Model): "${checkpoint.answer}"');
+    debugPrint('   ├─ Target Answer Used: "$targetAnswer"');
+    debugPrint('   ├─ Normalized Submitted: "$normalizedSubmitted"');
+    debugPrint('   ├─ Normalized Target: "$normalizedTarget"');
+    debugPrint('   └─ Result isCorrect: $isCorrect');
 
     if (!isCorrect) {
       emit(current.copyWith(isAnswerWrong: true));
