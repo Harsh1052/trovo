@@ -19,6 +19,9 @@ import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/onboarding/presentation/pages/splash_page.dart';
 import '../../features/paywall/presentation/pages/paywall_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/squad/presentation/pages/create_squad_page.dart';
+import '../../features/squad/presentation/pages/join_squad_page.dart';
+import '../../features/squad/presentation/pages/squad_lobby_page.dart';
 import 'route_names.dart';
 
 /// Builds the app's [GoRouter] instance.
@@ -145,6 +148,14 @@ final List<RouteBase> _routes = [
         ),
       ),
       GoRoute(
+        path: 'squad/create',
+        builder: (_, state) => CreateSquadPage(
+          huntId: state.pathParameters['huntId']!,
+          userId: state.uri.queryParameters['userId'] ?? '',
+          displayName: state.uri.queryParameters['name'] ?? '',
+        ),
+      ),
+      GoRoute(
         path: 'complete',
         builder: (_, state) => HuntCompletePage(
           huntId: state.pathParameters['huntId']!,
@@ -155,6 +166,23 @@ final List<RouteBase> _routes = [
         ),
       ),
     ],
+  ),
+
+  // ── Squad flow ──────────────────────────────────────────────────────────────────
+  GoRoute(
+    path: RouteNames.squadJoin,
+    builder: (_, state) => JoinSquadPage(
+      userId: state.uri.queryParameters['userId'] ?? '',
+      displayName: state.uri.queryParameters['name'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: RouteNames.squadLobby,
+    builder: (_, state) => SquadLobbyPage(
+      squadId: state.pathParameters['squadId']!,
+      userId: state.uri.queryParameters['userId'] ?? '',
+      displayName: state.uri.queryParameters['name'] ?? '',
+    ),
   ),
 
   // ── Paywall ───────────────────────────────────────────────────────────────────

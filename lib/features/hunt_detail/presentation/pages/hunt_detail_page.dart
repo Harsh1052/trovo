@@ -7,6 +7,8 @@ import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../features/auth/bloc/auth_bloc.dart';
+import '../../../../features/auth/bloc/auth_state.dart';
 import '../../../../shared/widgets/hm_button.dart';
 import '../../../../shared/widgets/hm_cached_image.dart';
 import '../../../../shared/widgets/hm_error_widget.dart';
@@ -105,12 +107,29 @@ class _HuntDetailContent extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(AppDimensions.pagePadding),
           child: state.hasAccess
-              ? HMButton.primary(
-                  label: 'Start Hunt',
-                  onPressed: () =>
-                      context.push(RouteNames.countdownPath(huntId)),
-                  icon: const Icon(Icons.play_arrow_rounded,
-                      color: Colors.white),
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: HMButton.primary(
+                        label: 'Start Solo Hunt',
+                        onPressed: () =>
+                            context.push(RouteNames.countdownPath(huntId)),
+                        icon: const Icon(Icons.play_arrow_rounded,
+                            color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.spaceS),
+                    SizedBox(
+                      width: double.infinity,
+                      child: HMButton.outlined(
+                        label: 'Play with Squad 👥',
+                        onPressed: () => _showSquadOptions(context),
+                        icon: const Icon(Icons.group_rounded),
+                      ),
+                    ),
+                  ],
                 )
               : HMButton.secondary(
                   label: 'Unlock for \$${(hunt.price / 100).toStringAsFixed(2)}',
@@ -120,4 +139,80 @@ class _HuntDetailContent extends StatelessWidget {
       ),
     );
   }
+
+  void _showSquadOptions(BuildContext context) {
+    // Extract current user info from AuthBloc.
+    final authState = context.read<AuthBloc>().state;
+    final userId = authState is AuthAuthenticated ? authState.user.uid : '';
+    final displayName =
+        authState is AuthAuthenticated ? authState.user.displayName : '';
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusXL),
+        ),
+      ),
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.all(AppDimensions.pagePadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.radiusFull),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceL),
+            Text('Squad Mode 👥',
+                style: AppTypography.headlineSmall),
+            const SizedBox(height: AppDimensions.spaceS),
+            Text(
+              'Hunt together with friends!',
+              style: AppTypography.bodyMedium
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: AppDimensions.spaceL),
+            SizedBox(
+              width: double.infinity,
+              child: HMButton.primary(
+                label: 'Create Squad Room',
+                icon: const Icon(Icons.add_circle_outline_rounded,
+                    color: Colors.white),
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  context.push(
+                    '${RouteNames.squadCreatePath(huntId)}'
+                    '?userId=$userId&name=${Uri.encodeComponent(displayName)}',
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceS),
+            SizedBox(
+              width: double.infinity,
+              child: HMButton.outlined(
+                label: 'Join with Code',
+                icon: const Icon(Icons.login_rounded),
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  context.push(
+                    '${RouteNames.squadJoin}'
+                    '?userId=$userId&name=${Uri.encodeComponent(displayName)}',
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceL),
+          ],
+        ),
+      ),
+    );
+  }
 }
+

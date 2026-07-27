@@ -5,6 +5,7 @@ abstract final class FirestorePaths {
   static const String users = 'users';
   static const String hunts = 'hunts';
   static const String huntProgress = 'huntProgress';
+  static const String squadSessions = 'squadSessions';
 
   // ── Sub-collections ───────────────────────────────────────────────────────
   static const String checkpoints = 'checkpoints';

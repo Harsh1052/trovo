@@ -23,6 +23,11 @@ abstract final class RouteNames {
   // ── Hunt complete ─────────────────────────────────────────────────────────
   static const String huntComplete = '/hunt/:huntId/complete';
 
+  // ── Squad ──────────────────────────────────────────────────────────────────
+  static const String squadCreate = '/hunt/:huntId/squad/create';
+  static const String squadJoin = '/squad/join';
+  static const String squadLobby = '/squad/:squadId/lobby';
+
   // ── Paywall ───────────────────────────────────────────────────────────────
   static const String paywall = '/paywall';
 
@@ -38,4 +43,10 @@ abstract final class RouteNames {
     int hintsUsed = 0,
   }) =>
       '/hunt/$huntId/complete?elapsed=$elapsedSeconds&hints=$hintsUsed';
+
+  // Squad path helpers.
+  static String squadCreatePath(String huntId) =>
+      '/hunt/$huntId/squad/create';
+  static String squadLobbyPath(String squadId) =>
+      '/squad/$squadId/lobby';
 }
