@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../app/routes/route_names.dart';
@@ -126,15 +127,68 @@ class _CluePageState extends State<CluePage> {
                       .add(ActiveHuntCheckpointAnswerSubmitted(typedText));
                 },
                 onPhotoSubmit: () async {
+                  final checkpoint = state.currentCheckpoint;
+                  final distance = state.distanceToCheckpoint;
                   final picker = ImagePicker();
+
                   try {
                     final photo = await picker.pickImage(
                       source: ImageSource.camera,
                       imageQuality: 85,
                     );
-                    if (photo != null && context.mounted) {
+                    if (photo == null || !context.mounted) return;
+
+                    // ── Factor 1: Real-time GPS Proximity Verification ──
+                    final unlockRadius = checkpoint.unlockRadius.toDouble();
+                    if (distance != null && distance > unlockRadius) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('📸 Photo Task Completed!')),
+                        SnackBar(
+                          backgroundColor: Colors.redAccent,
+                          content: Text(
+                            '📍 Location Verification Failed! You are ${distance.toInt()}m away. Walk within ${checkpoint.unlockRadius}m of the stop to take the photo!',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // ── Factor 2: On-Device AI OCR Vision Verification ──
+                    final targetText = checkpoint.targetText;
+                    if (targetText != null && targetText.isNotEmpty) {
+                      final inputImage = InputImage.fromFilePath(photo.path);
+                      final textRecognizer = TextRecognizer();
+                      try {
+                        final RecognizedText recognizedText =
+                            await textRecognizer.processImage(inputImage);
+                        await textRecognizer.close();
+
+                        final scannedContent =
+                            recognizedText.text.toUpperCase();
+                        final expected = targetText.toUpperCase();
+
+                        if (!scannedContent.contains(expected)) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.orange.shade800,
+                                content: Text(
+                                  '🔍 Photo Content Notice: Could not detect "$targetText" in the photo. Frame the sign or object clearly!',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (err) {
+                        debugPrint('OCR Scan notice: $err');
+                      }
+                    }
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('🎉 Location & Photo Verified! Checkpoint Unlocked!'),
+                        ),
                       );
                       context
                           .read<ActiveHuntBloc>()
@@ -142,9 +196,6 @@ class _CluePageState extends State<CluePage> {
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('📸 Photo Task Completed!')),
-                      );
                       context
                           .read<ActiveHuntBloc>()
                           .add(const ActiveHuntPhotoSubmitted());

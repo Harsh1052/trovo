@@ -35,6 +35,7 @@ class CheckpointModel extends Equatable {
     this.unlockRadius = 20,
     this.funFact,
     this.imageUrl,
+    this.targetText,
   });
 
   final String checkpointId;
@@ -64,6 +65,9 @@ class CheckpointModel extends Equatable {
 
   /// Optional 3D graphic / illustration asset for this checkpoint.
   final String? imageUrl;
+
+  /// Optional target text/letter expected in photo verification tasks (e.g. 'A', 'SARTHANA').
+  final String? targetText;
 
   // ── Computed helpers ───────────────────────────────────────────────────
 
@@ -114,6 +118,7 @@ class CheckpointModel extends Equatable {
       unlockRadius: json['unlockRadius'] as int? ?? 20,
       funFact: json['funFact'] as String?,
       imageUrl: json['imageUrl'] as String?,
+      targetText: json['targetText'] as String?,
     );
   }
 
@@ -130,6 +135,7 @@ class CheckpointModel extends Equatable {
         'unlockRadius': unlockRadius,
         'funFact': funFact,
         'imageUrl': imageUrl,
+        'targetText': targetText,
       };
 
   // ── copyWith ──────────────────────────────────────────────────────────────
@@ -144,6 +150,7 @@ class CheckpointModel extends Equatable {
     int? unlockRadius,
     String? funFact,
     String? imageUrl,
+    String? targetText,
   }) =>
       CheckpointModel(
         checkpointId: checkpointId,
@@ -158,6 +165,7 @@ class CheckpointModel extends Equatable {
         unlockRadius: unlockRadius ?? this.unlockRadius,
         funFact: funFact ?? this.funFact,
         imageUrl: imageUrl ?? this.imageUrl,
+        targetText: targetText ?? this.targetText,
       );
 
   // ── Equatable ─────────────────────────────────────────────────────────────
@@ -176,5 +184,6 @@ class CheckpointModel extends Equatable {
         unlockRadius,
         funFact,
         imageUrl,
+        targetText,
       ];
 }

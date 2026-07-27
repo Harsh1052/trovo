@@ -113,6 +113,7 @@ abstract final class SeedHunts {
         funFact:
             'Banyan trees (Ficus benghalensis) can live for over 500 years! Sarthana Nature Park spans over 81 acres of rich flora, serving as Surat\'s green lung.',
         imageUrl: 'https://iili.io/CePEes9.jpg',
+        targetText: 'BANYAN',
       ),
       CheckpointModel(
         checkpointId: 'sdh_cp_03',
@@ -164,6 +165,7 @@ abstract final class SeedHunts {
         funFact:
             'Quest Completed! You recovered the 1670 Royal Diamond of Surat, earned 500 XP, and unlocked the Master Treasure Hunter Trophy!',
         imageUrl: 'https://iili.io/CePGC7f.jpg',
+        targetText: 'SURAT',
       ),
     ],
     'cubbon_park_emerald': [
