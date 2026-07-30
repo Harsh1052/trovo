@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
+import '../../../../shared/services/photo_verification_service.dart';
 import '../../../../shared/widgets/hm_button.dart';
 import '../../../active_hunt/bloc/active_hunt_bloc.dart';
 import '../../../active_hunt/bloc/active_hunt_event.dart';
@@ -25,6 +26,7 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
   final _picker = ImagePicker();
   File? _photo;
   bool _picking = false;
+  bool _submitting = false;
 
   Future<void> _pickPhoto() async {
     if (_picking) return;
@@ -54,8 +56,58 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
     }
   }
 
-  void _submit() {
-    context.read<ActiveHuntBloc>().add(const ActiveHuntPhotoSubmitted());
+  Future<void> _submit() async {
+    if (_photo == null || _submitting) return;
+    final blocState = context.read<ActiveHuntBloc>().state;
+    if (blocState is! ActiveHuntInProgress) return;
+
+    setState(() => _submitting = true);
+    try {
+      final verification = await PhotoVerificationService.verifyPhoto(
+        photoFile: _photo!,
+        checkpoint: blocState.currentCheckpoint,
+        distanceInMeters: blocState.distanceToCheckpoint,
+      );
+
+      if (!mounted) return;
+
+      switch (verification) {
+        case PhotoVerificationFailure(:final message):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.redAccent,
+              content: Text(message),
+            ),
+          );
+          // Block progression when verification fails!
+          return;
+
+        case PhotoVerificationSuccess():
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text(
+                '🎉 Location & Photo Verified! Checkpoint Unlocked!',
+              ),
+            ),
+          );
+          context
+              .read<ActiveHuntBloc>()
+              .add(const ActiveHuntPhotoSubmitted());
+      }
+    } catch (e) {
+      debugPrint('Photo verification error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text('❌ Error verifying photo: $e'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   @override
@@ -149,7 +201,8 @@ class _PhotoTaskPageState extends State<PhotoTaskPage> {
 
                 HMButton.primary(
                   label: 'Submit Photo',
-                  onPressed: _photo != null ? _submit : null,
+                  isLoading: _submitting,
+                  onPressed: (_photo != null && !_submitting) ? _submit : null,
                 ),
               ],
             ),

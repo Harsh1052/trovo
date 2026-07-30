@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../app/routes/route_names.dart';
@@ -10,6 +11,7 @@ import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../shared/models/checkpoint_model.dart';
+import '../../../../shared/services/photo_verification_service.dart';
 import '../../../../shared/widgets/hm_button.dart';
 import '../../../../shared/widgets/hm_error_widget.dart';
 import '../../../../shared/widgets/hm_loading.dart';
@@ -138,67 +140,48 @@ class _CluePageState extends State<CluePage> {
                     );
                     if (photo == null || !context.mounted) return;
 
-                    // ── Factor 1: Real-time GPS Proximity Verification ──
-                    final unlockRadius = checkpoint.unlockRadius.toDouble();
-                    if (distance != null && distance > unlockRadius) {
+                    final verification =
+                        await PhotoVerificationService.verifyPhoto(
+                      photoFile: File(photo.path),
+                      checkpoint: checkpoint,
+                      distanceInMeters: distance,
+                    );
+
+                    if (!context.mounted) return;
+
+                    switch (verification) {
+                      case PhotoVerificationFailure(:final message):
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text(message),
+                          ),
+                        );
+                        // Block progression to next question when image verification fails!
+                        return;
+
+                      case PhotoVerificationSuccess():
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text(
+                              '🎉 Location & Photo Verified! Checkpoint Unlocked!',
+                            ),
+                          ),
+                        );
+                        context
+                            .read<ActiveHuntBloc>()
+                            .add(const ActiveHuntPhotoSubmitted());
+                    }
+                  } catch (e) {
+                    debugPrint('Photo capture error: $e');
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.redAccent,
-                          content: Text(
-                            '📍 Location Verification Failed! You are ${distance.toInt()}m away. Walk within ${checkpoint.unlockRadius}m of the stop to take the photo!',
-                          ),
+                          content: Text('❌ Error capturing photo: $e'),
                         ),
                       );
-                      return;
-                    }
-
-                    // ── Factor 2: On-Device AI OCR Vision Verification ──
-                    final targetText = checkpoint.targetText;
-                    if (targetText != null && targetText.isNotEmpty) {
-                      final inputImage = InputImage.fromFilePath(photo.path);
-                      final textRecognizer = TextRecognizer();
-                      try {
-                        final RecognizedText recognizedText =
-                            await textRecognizer.processImage(inputImage);
-                        await textRecognizer.close();
-
-                        final scannedContent =
-                            recognizedText.text.toUpperCase();
-                        final expected = targetText.toUpperCase();
-
-                        if (!scannedContent.contains(expected)) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.orange.shade800,
-                                content: Text(
-                                  '🔍 Photo Content Notice: Could not detect "$targetText" in the photo. Frame the sign or object clearly!',
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      } catch (err) {
-                        debugPrint('OCR Scan notice: $err');
-                      }
-                    }
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('🎉 Location & Photo Verified! Checkpoint Unlocked!'),
-                        ),
-                      );
-                      context
-                          .read<ActiveHuntBloc>()
-                          .add(const ActiveHuntPhotoSubmitted());
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      context
-                          .read<ActiveHuntBloc>()
-                          .add(const ActiveHuntPhotoSubmitted());
                     }
                   }
                 },
