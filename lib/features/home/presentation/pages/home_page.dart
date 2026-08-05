@@ -59,6 +59,11 @@ class _HomeScaffold extends StatelessWidget {
               );
             },
           ),
+          // ── Leaderboard Hub ─────────────────────────────────────────────
+          IconButton(
+            icon: const Icon(Icons.emoji_events_outlined),
+            onPressed: () => context.push(RouteNames.leaderboard),
+          ),
           // ── Profile ─────────────────────────────────────────────────────
           IconButton(
             icon: const Icon(Icons.person_outline_rounded),

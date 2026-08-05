@@ -32,6 +32,9 @@ abstract final class RouteNames {
   static const String studioCreate = '/studio/create';
   static const String studioMyHunts = '/studio/my-hunts';
 
+  // ── Leaderboard & City Guardians ──────────────────────────────────────────
+  static const String leaderboard = '/leaderboard';
+
   // ── Paywall ───────────────────────────────────────────────────────────────
   static const String paywall = '/paywall';
 

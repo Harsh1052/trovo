@@ -23,6 +23,7 @@ import '../../bloc/active_hunt_event.dart';
 import '../../bloc/active_hunt_state.dart';
 import '../../../../core/utils/proximity_calculator.dart';
 import '../widgets/checkpoint_celebration.dart';
+import '../widgets/ghost_pace_banner.dart';
 import '../widgets/hint_bottom_sheet.dart';
 import '../widgets/hunt_progress_bar.dart';
 import '../widgets/letter_box_input.dart';
@@ -300,6 +301,11 @@ class _ClueContent extends StatelessWidget {
                       ),
                       const SizedBox(height: AppDimensions.spaceM),
                     ],
+                    GhostPaceBanner(
+                      elapsedSeconds: state.elapsed.inSeconds,
+                      guardianTimeSeconds: 900, // 15-minute benchmark
+                    ),
+                    const SizedBox(height: AppDimensions.spaceM),
                     Text(checkpoint.clueText,
                         style: AppTypography.bodyLarge),
                   ],

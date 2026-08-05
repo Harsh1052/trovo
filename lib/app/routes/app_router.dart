@@ -19,6 +19,7 @@ import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/onboarding/presentation/pages/splash_page.dart';
 import '../../features/paywall/presentation/pages/paywall_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/leaderboard/presentation/pages/leaderboard_hub_page.dart';
 import '../../features/squad/presentation/pages/create_squad_page.dart';
 import '../../features/squad/presentation/pages/join_squad_page.dart';
 import '../../features/squad/presentation/pages/squad_lobby_page.dart';
@@ -195,6 +196,12 @@ final List<RouteBase> _routes = [
   GoRoute(
     path: RouteNames.studioMyHunts,
     builder: (_, _) => const MyCreatedHuntsPage(),
+  ),
+
+  // ── Leaderboard & City Guardians ──────────────────────────────────────────
+  GoRoute(
+    path: RouteNames.leaderboard,
+    builder: (_, _) => const LeaderboardHubPage(),
   ),
 
   // ── Paywall ───────────────────────────────────────────────────────────────────
