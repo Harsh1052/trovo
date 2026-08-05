@@ -31,7 +31,9 @@ class _StepDetailsViewState extends State<StepDetailsView> {
   void initState() {
     super.initState();
     final bloc = context.read<HuntCreatorBloc>();
-    final state = bloc.state as HuntCreatorFormState;
+    final state = bloc.state is HuntCreatorFormState
+        ? bloc.state as HuntCreatorFormState
+        : const HuntCreatorFormState();
 
     _titleController = TextEditingController(text: state.title);
     _descController = TextEditingController(text: state.description);

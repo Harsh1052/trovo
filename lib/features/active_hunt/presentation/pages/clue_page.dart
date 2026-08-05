@@ -10,6 +10,8 @@ import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_dimensions.dart';
 import '../../../../config/theme/app_typography.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/error/result.dart';
+import '../../../../shared/models/guardian_record_model.dart';
 import '../../../../shared/models/checkpoint_model.dart';
 import '../../../../shared/services/photo_verification_service.dart';
 import '../../../../shared/widgets/hm_button.dart';
@@ -24,6 +26,7 @@ import '../../bloc/active_hunt_state.dart';
 import '../../../../core/utils/proximity_calculator.dart';
 import '../widgets/checkpoint_celebration.dart';
 import '../widgets/ghost_pace_banner.dart';
+import '../../../../shared/repositories/leaderboard_repository.dart';
 import '../widgets/hint_bottom_sheet.dart';
 import '../widgets/hunt_progress_bar.dart';
 import '../widgets/letter_box_input.dart';
@@ -301,9 +304,9 @@ class _ClueContent extends StatelessWidget {
                       ),
                       const SizedBox(height: AppDimensions.spaceM),
                     ],
-                    GhostPaceBanner(
+                    _GuardianPaceFetcher(
+                      huntId: state.hunt.huntId,
                       elapsedSeconds: state.elapsed.inSeconds,
-                      guardianTimeSeconds: 900, // 15-minute benchmark
                     ),
                     const SizedBox(height: AppDimensions.spaceM),
                     Text(checkpoint.clueText,
@@ -354,5 +357,53 @@ class _ClueContent extends StatelessWidget {
     final m = seconds ~/ 60;
     final s = seconds % 60;
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+}
+
+/// Fetches the real Guardian record time for the active hunt.
+/// Hides the GhostPaceBanner entirely if no guardian record exists.
+class _GuardianPaceFetcher extends StatefulWidget {
+  const _GuardianPaceFetcher({
+    required this.huntId,
+    required this.elapsedSeconds,
+  });
+
+  final String huntId;
+  final int elapsedSeconds;
+
+  @override
+  State<_GuardianPaceFetcher> createState() => _GuardianPaceFetcherState();
+}
+
+class _GuardianPaceFetcherState extends State<_GuardianPaceFetcher> {
+  Future<GuardianRecordModel?>? _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _fetchGuardian();
+  }
+
+  Future<GuardianRecordModel?> _fetchGuardian() async {
+    final repo = sl<LeaderboardRepository>();
+    final result = await repo.fetchHuntGuardian(widget.huntId);
+    if (result is Success<GuardianRecordModel?>) return result.data;
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<GuardianRecordModel?>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const SizedBox.shrink();
+        }
+        return GhostPaceBanner(
+          elapsedSeconds: widget.elapsedSeconds,
+          guardianTimeSeconds: snapshot.data!.bestTimeSeconds,
+        );
+      },
+    );
   }
 }

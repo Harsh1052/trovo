@@ -57,20 +57,19 @@ class FirebaseLeaderboardRepository implements LeaderboardRepository {
   }) async {
     try {
       final docRef = _guardiansCollection.doc(huntId);
-      final doc = await docRef.get();
 
-      bool isNewRecord = false;
+      // Atomic transaction prevents two concurrent players from both
+      // reading the old record and both overwriting (TOCTOU race).
+      final isNewRecord = await _firestore.runTransaction<bool>((txn) async {
+        final doc = await txn.get(docRef);
 
-      if (!doc.exists) {
-        isNewRecord = true;
-      } else {
-        final currentGuardian = GuardianRecordModel.fromFirestore(doc);
-        if (completionTimeSeconds < currentGuardian.bestTimeSeconds) {
-          isNewRecord = true;
+        if (doc.exists) {
+          final currentGuardian = GuardianRecordModel.fromFirestore(doc);
+          if (completionTimeSeconds >= currentGuardian.bestTimeSeconds) {
+            return false; // Not a new record
+          }
         }
-      }
 
-      if (isNewRecord) {
         final newGuardian = GuardianRecordModel(
           huntId: huntId,
           guardianUserId: userId,
@@ -80,7 +79,11 @@ class FirebaseLeaderboardRepository implements LeaderboardRepository {
           setAt: DateTime.now(),
         );
 
-        await docRef.set(newGuardian.toFirestore());
+        txn.set(docRef, newGuardian.toFirestore());
+        return true;
+      });
+
+      if (isNewRecord) {
         AppLogger.i('New Guardian claimed for hunt $huntId by $userId!', tag: _tag);
       }
 
@@ -94,6 +97,9 @@ class FirebaseLeaderboardRepository implements LeaderboardRepository {
   }
 
   @override
+  // TODO(leaderboard): Replace mock standings with real Firestore query:
+  //   weekly_leagues/{weekId}/members where weekId = ISO week string.
+  //   Gate the Weekly League tab behind a feature flag until this is done.
   Future<Result<List<LeagueMemberModel>>> fetchWeeklyLeagueStandings(String userId) async {
     try {
       // Mock / Seed 20-Player League standings for fast response
@@ -152,6 +158,8 @@ class FirebaseLeaderboardRepository implements LeaderboardRepository {
   }
 
   @override
+  // TODO(leaderboard): Replace mock rank stats with real Firestore aggregation:
+  //   users/{userId}/stats document with totalXp, huntsCompleted, guardianshipsHeld.
   Future<Result<UserRankModel>> fetchUserRankStats(String userId) async {
     try {
       final stats = UserRankModel(

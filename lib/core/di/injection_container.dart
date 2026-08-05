@@ -14,6 +14,7 @@ import '../../features/home/bloc/home_bloc.dart';
 import '../../features/hunt_complete/bloc/hunt_complete_cubit.dart';
 import '../../features/hunt_detail/bloc/hunt_detail_cubit.dart';
 import '../../features/leaderboard/bloc/leaderboard_bloc.dart';
+import '../../features/studio/bloc/my_created_hunts_cubit.dart';
 import '../../features/paywall/bloc/paywall_cubit.dart';
 import '../../features/profile/bloc/profile_cubit.dart';
 import '../../features/squad/bloc/squad_bloc.dart';
@@ -208,5 +209,9 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<LeaderboardBloc>(
     () => LeaderboardBloc(leaderboardRepository: sl<LeaderboardRepository>()),
+  );
+
+  sl.registerFactory<MyCreatedHuntsCubit>(
+    () => MyCreatedHuntsCubit(creatorRepository: sl<CreatorRepository>()),
   );
 }

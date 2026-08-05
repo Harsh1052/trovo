@@ -55,6 +55,13 @@ class _CreatorWizardContentState extends State<_CreatorWizardContent> {
     context.read<HuntCreatorBloc>().add(HuntCreatorStepChanged(step));
   }
 
+  bool _canAdvance(HuntCreatorState state, int currentStep) {
+    if (state is! HuntCreatorFormState) return false;
+    if (currentStep == 0) return state.isStep1Valid;
+    if (currentStep == 1) return state.isStep2Valid;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HuntCreatorBloc, HuntCreatorState>(
@@ -117,7 +124,9 @@ class _CreatorWizardContentState extends State<_CreatorWizardContent> {
                         if (currentStep < 2)
                           HMButton.primary(
                             label: 'Next Step',
-                            onPressed: () => _onStepTap(currentStep + 1),
+                            onPressed: _canAdvance(state, currentStep)
+                                ? () => _onStepTap(currentStep + 1)
+                                : null,
                           ),
                       ],
                     ),

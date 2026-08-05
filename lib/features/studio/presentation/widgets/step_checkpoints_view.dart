@@ -15,9 +15,14 @@ class StepCheckpointsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.watch<HuntCreatorBloc>();
-    final state = bloc.state as HuntCreatorFormState;
-    final checkpoints = state.checkpoints;
+    return BlocBuilder<HuntCreatorBloc, HuntCreatorState>(
+      buildWhen: (_, state) => state is HuntCreatorFormState,
+      builder: (context, rawState) {
+        if (rawState is! HuntCreatorFormState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final state = rawState;
+        final checkpoints = state.checkpoints;
 
     return Padding(
       padding: const EdgeInsets.all(AppDimensions.pagePadding),
@@ -99,7 +104,11 @@ class StepCheckpointsView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final cp = checkpoints[index];
                       return Card(
-                        key: ValueKey('cp_${index}_${cp.clueText.hashCode}'),
+                        key: ValueKey(
+                          cp.checkpointId.isNotEmpty
+                              ? cp.checkpointId
+                              : 'cp_new_$index',
+                        ),
                         margin: const EdgeInsets.only(bottom: AppDimensions.spaceS),
                         child: ListTile(
                           leading: CircleAvatar(
@@ -161,6 +170,8 @@ class StepCheckpointsView extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 
@@ -382,13 +393,20 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
         ElevatedButton(
           onPressed: () {
             final clue = _clueController.text.trim();
-            final lat = double.tryParse(_latController.text.trim()) ?? 0.0;
-            final lng = double.tryParse(_lngController.text.trim()) ?? 0.0;
+            final lat = double.tryParse(_latController.text.trim());
+            final lng = double.tryParse(_lngController.text.trim());
 
-            if (clue.isEmpty || lat == 0.0 || lng == 0.0) {
+            if (clue.isEmpty ||
+                lat == null ||
+                lng == null ||
+                lat < -90 ||
+                lat > 90 ||
+                lng < -180 ||
+                lng > 180) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Please enter valid clue text and coordinates.'),
+                  content: Text(
+                      'Please enter valid clue text and coordinates (lat: -90..90, lng: -180..180).'),
                   backgroundColor: AppColors.error,
                 ),
               );

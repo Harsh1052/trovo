@@ -212,10 +212,17 @@ class _WeeklyLeagueTab extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(AppDimensions.radiusFull),
                     ),
-                    child: Text(
-                      'Resets in 3 days',
-                      style: AppTypography.labelSmall
-                          .copyWith(color: Colors.white),
+                    child: Builder(
+                      builder: (context) {
+                        final now = DateTime.now();
+                        final daysUntilSunday = DateTime.sunday - now.weekday;
+                        final remaining = daysUntilSunday <= 0 ? 7 : daysUntilSunday;
+                        return Text(
+                          'Resets in $remaining day${remaining == 1 ? '' : 's'}',
+                          style: AppTypography.labelSmall
+                              .copyWith(color: Colors.white),
+                        );
+                      },
                     ),
                   ),
                 ],
