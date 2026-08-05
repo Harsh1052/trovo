@@ -22,32 +22,74 @@ class HMCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget image = CachedNetworkImage(
-      imageUrl: url,
-      width: width,
-      height: height,
-      fit: fit,
-      placeholder: (_, _) => Container(
+    Widget image;
+
+    if (url.trim().isEmpty) {
+      image = _buildThematicFallback();
+    } else if (url.startsWith('assets/')) {
+      image = Image.asset(
+        url,
         width: width,
         height: height,
-        color: AppColors.shimmerBase,
-        child: const Center(child: HMLoading(size: 24)),
-      ),
-      errorWidget: (_, _, _) => Container(
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => _buildThematicFallback(),
+      );
+    } else {
+      image = CachedNetworkImage(
+        imageUrl: url,
         width: width,
         height: height,
-        color: AppColors.greyExtraLight,
-        child: const Icon(
-          Icons.image_not_supported_outlined,
-          color: AppColors.greyLight,
+        fit: fit,
+        placeholder: (context, url) => Container(
+          width: width,
+          height: height,
+          color: AppColors.shimmerBase,
+          child: const Center(child: HMLoading(size: 24)),
         ),
-      ),
-    );
+        errorWidget: (context, url, error) => _buildThematicFallback(),
+      );
+    }
 
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius!, child: image);
     }
 
     return image;
+  }
+
+  Widget _buildThematicFallback() {
+    return Container(
+      width: width,
+      height: height,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primaryDark, AppColors.primary],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(
+              Icons.explore_rounded,
+              color: AppColors.secondary,
+              size: 36,
+            ),
+            SizedBox(height: 4),
+            Text(
+              'HunterMania Quest',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

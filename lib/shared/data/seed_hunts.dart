@@ -184,6 +184,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             "Cubbon Park's bamboo groves date back over 150 years and house over 6,000 species of flora.",
+        imageUrl: 'assets/images/cubbon_cp1_bamboo.png',
       ),
       CheckpointModel(
         checkpointId: 'cpe_cp_02',
@@ -200,6 +201,8 @@ abstract final class SeedHunts {
         unlockRadius: 25,
         funFact:
             'The State Central Library inside Seshadri Iyer Memorial Hall holds over 300,000 rare books, including braille editions.',
+        imageUrl: 'assets/images/cubbon_cp2_red_memorial.png',
+        targetText: 'SESHADRI',
       ),
       CheckpointModel(
         checkpointId: 'cpe_cp_03',
@@ -216,6 +219,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'The Victoria Statue at Cubbon Park was unveiled in 1906 and is one of the few surviving British-era marble statues in India.',
+        imageUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop',
       ),
       CheckpointModel(
         checkpointId: 'cpe_cp_04',
@@ -231,6 +235,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'Built in 1870, the Cubbon Park Bandstand was the cultural heart of British Bangalore\'s social life.',
+        imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop',
       ),
       CheckpointModel(
         checkpointId: 'cpe_cp_05',
@@ -247,6 +252,8 @@ abstract final class SeedHunts {
         unlockRadius: 30,
         funFact:
             "Cubbon Park reduces Bengaluru's central urban heat island temperature by up to 3°C!",
+        imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=800&auto=format&fit=crop',
+        targetText: 'LOTUS',
       ),
     ],
     'panchvati_garden': [
@@ -265,6 +272,7 @@ abstract final class SeedHunts {
         unlockRadius: 20,
         funFact:
             'Ramkund never dries up even in Nashik\'s harshest summers.',
+        imageUrl: 'assets/images/panchvati_cp1_ramkund.png',
       ),
     ],
     'sula_vineyards': [
@@ -281,6 +289,7 @@ abstract final class SeedHunts {
         answer: 'rajeev',
         unlockRadius: 20,
         funFact: 'Rajeev Samant founded Sula Vineyards in 1999.',
+        imageUrl: 'assets/images/sula_cp1_vineyard.png',
       ),
     ],
   };

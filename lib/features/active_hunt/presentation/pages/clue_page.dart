@@ -15,6 +15,7 @@ import '../../../../shared/models/guardian_record_model.dart';
 import '../../../../shared/models/checkpoint_model.dart';
 import '../../../../shared/services/photo_verification_service.dart';
 import '../../../../shared/widgets/hm_button.dart';
+import '../../../../shared/widgets/hm_cached_image.dart';
 import '../../../../shared/widgets/hm_error_widget.dart';
 import '../../../../shared/widgets/hm_loading.dart';
 import '../../../../shared/widgets/hm_location_denied_widget.dart';
@@ -279,31 +280,14 @@ class _ClueContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (checkpoint.imageUrl != null &&
-                        checkpoint.imageUrl!.isNotEmpty) ...[
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusM),
-                        child: checkpoint.imageUrl!.startsWith('http')
-                            ? Image.network(
-                                checkpoint.imageUrl!,
-                                width: double.infinity,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                errorBuilder: (ctx, err, stack) =>
-                                    const SizedBox.shrink(),
-                              )
-                            : Image.asset(
-                                checkpoint.imageUrl!,
-                                width: double.infinity,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                errorBuilder: (ctx, err, stack) =>
-                                    const SizedBox.shrink(),
-                              ),
-                      ),
-                      const SizedBox(height: AppDimensions.spaceM),
-                    ],
+                    HMCachedImage(
+                      url: checkpoint.imageUrl ?? '',
+                      width: double.infinity,
+                      height: 180,
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusM),
+                    ),
+                    const SizedBox(height: AppDimensions.spaceM),
                     _GuardianPaceFetcher(
                       huntId: state.hunt.huntId,
                       elapsedSeconds: state.elapsed.inSeconds,

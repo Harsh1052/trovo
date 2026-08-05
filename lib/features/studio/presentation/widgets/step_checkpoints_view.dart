@@ -227,6 +227,7 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
   late TextEditingController _lngController;
   late TextEditingController _hintController;
   late TextEditingController _funFactController;
+  late TextEditingController _imageController;
 
   CheckpointType _type = CheckpointType.clue;
   double _radius = 20;
@@ -245,6 +246,7 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
         TextEditingController(text: (cp?.longitude ?? 72.8124).toString());
     _hintController = TextEditingController(text: cp?.hintText ?? '');
     _funFactController = TextEditingController(text: cp?.funFact ?? '');
+    _imageController = TextEditingController(text: cp?.imageUrl ?? '');
 
     _type = cp?.type ?? CheckpointType.clue;
     _radius = (cp?.unlockRadius ?? 20).toDouble();
@@ -259,6 +261,7 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
     _lngController.dispose();
     _hintController.dispose();
     _funFactController.dispose();
+    _imageController.dispose();
     super.dispose();
   }
 
@@ -382,6 +385,14 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
                 labelText: 'Fun Fact / Lore (Optional)',
               ),
             ),
+            const SizedBox(height: AppDimensions.spaceS),
+            TextField(
+              controller: _imageController,
+              decoration: const InputDecoration(
+                labelText: 'Graphic / Image URL (Optional)',
+                hintText: 'https://... or assets/images/...',
+              ),
+            ),
           ],
         ),
       ),
@@ -430,6 +441,9 @@ class _AddCheckpointDialogState extends State<_AddCheckpointDialog> {
                   : null,
               unlockRadius: _radius.toInt(),
               funFact: _funFactController.text.trim(),
+              imageUrl: _imageController.text.trim().isEmpty
+                  ? null
+                  : _imageController.text.trim(),
             );
 
             widget.onSave(cp);
