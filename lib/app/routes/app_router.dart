@@ -22,6 +22,8 @@ import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/squad/presentation/pages/create_squad_page.dart';
 import '../../features/squad/presentation/pages/join_squad_page.dart';
 import '../../features/squad/presentation/pages/squad_lobby_page.dart';
+import '../../features/studio/presentation/pages/creator_wizard_page.dart';
+import '../../features/studio/presentation/pages/my_created_hunts_page.dart';
 import 'route_names.dart';
 
 /// Builds the app's [GoRouter] instance.
@@ -183,6 +185,16 @@ final List<RouteBase> _routes = [
       userId: state.uri.queryParameters['userId'] ?? '',
       displayName: state.uri.queryParameters['name'] ?? '',
     ),
+  ),
+
+  // ── Studio / UGC Creator ──────────────────────────────────────────────────
+  GoRoute(
+    path: RouteNames.studioCreate,
+    builder: (_, _) => const CreatorWizardPage(),
+  ),
+  GoRoute(
+    path: RouteNames.studioMyHunts,
+    builder: (_, _) => const MyCreatedHuntsPage(),
   ),
 
   // ── Paywall ───────────────────────────────────────────────────────────────────

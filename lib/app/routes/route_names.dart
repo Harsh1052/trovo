@@ -28,6 +28,10 @@ abstract final class RouteNames {
   static const String squadJoin = '/squad/join';
   static const String squadLobby = '/squad/:squadId/lobby';
 
+  // ── Studio / UGC Creator ──────────────────────────────────────────────────
+  static const String studioCreate = '/studio/create';
+  static const String studioMyHunts = '/studio/my-hunts';
+
   // ── Paywall ───────────────────────────────────────────────────────────────
   static const String paywall = '/paywall';
 

@@ -141,6 +141,9 @@ class CheckpointModel extends Equatable {
   // ── copyWith ──────────────────────────────────────────────────────────────
 
   CheckpointModel copyWith({
+    String? checkpointId,
+    String? huntId,
+    int? orderIndex,
     String? clueText,
     String? hintText,
     double? latitude,
@@ -153,9 +156,9 @@ class CheckpointModel extends Equatable {
     String? targetText,
   }) =>
       CheckpointModel(
-        checkpointId: checkpointId,
-        huntId: huntId,
-        orderIndex: orderIndex,
+        checkpointId: checkpointId ?? this.checkpointId,
+        huntId: huntId ?? this.huntId,
+        orderIndex: orderIndex ?? this.orderIndex,
         clueText: clueText ?? this.clueText,
         hintText: hintText ?? this.hintText,
         latitude: latitude ?? this.latitude,

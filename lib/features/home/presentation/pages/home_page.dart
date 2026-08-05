@@ -15,6 +15,7 @@ import '../../bloc/home_state.dart';
 import '../widgets/city_selector_sheet.dart';
 import '../widgets/featured_hunt_card.dart';
 import '../widgets/hunt_list_card.dart';
+import '../../../studio/presentation/widgets/join_by_code_dialog.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -135,6 +136,83 @@ class _HomeContent extends StatelessWidget {
                   ..._huntTiles(state.freeHunts),
                   const SizedBox(height: AppDimensions.spaceL),
                 ],
+
+                // ── Studio Creator Banner ───────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.pagePadding,
+                    vertical: AppDimensions.spaceS,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(AppDimensions.cardPadding),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primaryDark, AppColors.primary],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.radiusL),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.auto_stories_rounded,
+                                color: AppColors.secondary, size: 28),
+                            const SizedBox(width: AppDimensions.spaceS),
+                            Text(
+                              'HunterMania Studio 🛠️',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppDimensions.spaceXS),
+                        Text(
+                          'Create custom treasure hunts & private event stories for your friends!',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: Colors.white70),
+                        ),
+                        const SizedBox(height: AppDimensions.spaceM),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.secondary,
+                                  foregroundColor: AppColors.textOnSecondary,
+                                ),
+                                icon: const Icon(Icons.add_rounded, size: 18),
+                                label: const Text('Create Story'),
+                                onPressed: () =>
+                                    context.push(RouteNames.studioCreate),
+                              ),
+                            ),
+                            const SizedBox(width: AppDimensions.spaceS),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  side: const BorderSide(color: Colors.white54),
+                                ),
+                                icon: const Icon(Icons.key_rounded, size: 18),
+                                label: const Text('Enter Code'),
+                                onPressed: () => JoinByCodeDialog.show(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppDimensions.spaceL),
 
                 // ── Paid hunts ────────────────────────────────────────────
                 if (state.paidHunts.isNotEmpty) ...[

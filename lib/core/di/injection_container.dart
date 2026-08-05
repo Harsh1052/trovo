@@ -16,9 +16,12 @@ import '../../features/hunt_detail/bloc/hunt_detail_cubit.dart';
 import '../../features/paywall/bloc/paywall_cubit.dart';
 import '../../features/profile/bloc/profile_cubit.dart';
 import '../../features/squad/bloc/squad_bloc.dart';
+import '../../features/studio/bloc/hunt_creator_bloc.dart';
 import '../network/connectivity_checker.dart';
 import '../../shared/repositories/auth_repository.dart';
 import '../../shared/repositories/cached_hunt_repository.dart';
+import '../../shared/repositories/creator_repository.dart';
+import '../../shared/repositories/firebase_creator_repository.dart';
 import '../../shared/repositories/firebase_squad_repository.dart';
 import '../../shared/repositories/hunt_repository.dart';
 import '../../shared/repositories/payment_repository.dart';
@@ -136,6 +139,12 @@ Future<void> initDependencies() async {
     ),
   );
 
+  sl.registerLazySingleton<CreatorRepository>(
+    () => FirebaseCreatorRepository(
+      firestore: sl<FirebaseFirestore>(),
+    ),
+  );
+
   // ── 5. BLoCs / Cubits (factory = fresh instance per BlocProvider) ─────────
   // Factories are cheap — GetIt constructs a new BLoC each time sl() is called,
   // which matches the lifecycle of the screen that owns the BlocProvider.
@@ -182,5 +191,9 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<SquadBloc>(
     () => SquadBloc(squadRepository: sl<SquadRepository>()),
+  );
+
+  sl.registerFactory<HuntCreatorBloc>(
+    () => HuntCreatorBloc(creatorRepository: sl<CreatorRepository>()),
   );
 }

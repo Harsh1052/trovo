@@ -20,6 +20,10 @@ class HuntModel extends Equatable {
     required this.startLongitude,
     required this.isActive,
     required this.createdAt,
+    this.creatorUserId,
+    this.creatorName,
+    this.isPrivate = false,
+    this.accessCode,
   });
 
   final String huntId;
@@ -51,6 +55,16 @@ class HuntModel extends Equatable {
 
   final DateTime createdAt;
 
+  /// UGC Creator fields
+  final String? creatorUserId;
+  final String? creatorName;
+
+  /// True = Private hunt (accessible via accessCode only). False = Public on feed.
+  final bool isPrivate;
+
+  /// 6-character access code for private hunts (e.g. 'PARTY9').
+  final String? accessCode;
+
   // ── Computed / display helpers ────────────────────────────────────────────
 
   /// Human-readable duration: "45 min" or "1 h 30 min".
@@ -74,6 +88,9 @@ class HuntModel extends Equatable {
 
   /// Convenience: whether this hunt has a valid cover image.
   bool get hasCoverImage => coverImageUrl.isNotEmpty;
+
+  /// True when this hunt was created by a user / community creator.
+  bool get isUgc => creatorUserId != null && creatorUserId!.isNotEmpty;
 
   // ── Firestore ─────────────────────────────────────────────────────────────
 
@@ -113,6 +130,10 @@ class HuntModel extends Equatable {
       startLongitude: (json['startLongitude'] as num?)?.toDouble() ?? 0.0,
       isActive: json['isActive'] as bool? ?? false,
       createdAt: _parseDateTime(json['createdAt']) ?? DateTime.now(),
+      creatorUserId: json['creatorUserId'] as String?,
+      creatorName: json['creatorName'] as String?,
+      isPrivate: json['isPrivate'] as bool? ?? false,
+      accessCode: json['accessCode'] as String?,
     );
   }
 
@@ -132,11 +153,16 @@ class HuntModel extends Equatable {
         'startLongitude': startLongitude,
         'isActive': isActive,
         'createdAt': createdAt.toIso8601String(),
+        'creatorUserId': creatorUserId,
+        'creatorName': creatorName,
+        'isPrivate': isPrivate,
+        'accessCode': accessCode,
       };
 
   // ── copyWith ──────────────────────────────────────────────────────────────
 
   HuntModel copyWith({
+    String? huntId,
     String? title,
     String? description,
     String? city,
@@ -150,9 +176,14 @@ class HuntModel extends Equatable {
     double? startLatitude,
     double? startLongitude,
     bool? isActive,
+    DateTime? createdAt,
+    String? creatorUserId,
+    String? creatorName,
+    bool? isPrivate,
+    String? accessCode,
   }) =>
       HuntModel(
-        huntId: huntId,
+        huntId: huntId ?? this.huntId,
         title: title ?? this.title,
         description: description ?? this.description,
         city: city ?? this.city,
@@ -166,7 +197,11 @@ class HuntModel extends Equatable {
         startLatitude: startLatitude ?? this.startLatitude,
         startLongitude: startLongitude ?? this.startLongitude,
         isActive: isActive ?? this.isActive,
-        createdAt: createdAt,
+        createdAt: createdAt ?? this.createdAt,
+        creatorUserId: creatorUserId ?? this.creatorUserId,
+        creatorName: creatorName ?? this.creatorName,
+        isPrivate: isPrivate ?? this.isPrivate,
+        accessCode: accessCode ?? this.accessCode,
       );
 
   // ── Equatable ─────────────────────────────────────────────────────────────
@@ -188,6 +223,10 @@ class HuntModel extends Equatable {
         startLongitude,
         isActive,
         createdAt,
+        creatorUserId,
+        creatorName,
+        isPrivate,
+        accessCode,
       ];
 }
 
