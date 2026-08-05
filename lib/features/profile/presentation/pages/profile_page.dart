@@ -127,6 +127,24 @@ class _ProfileContent extends StatelessWidget {
             ),
           ),
 
+          // ── HunterMania Studio Creator ──────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.pagePadding),
+            child: Card(
+              color: AppColors.surfaceVariant,
+              child: ListTile(
+                leading: const Icon(Icons.auto_stories_rounded,
+                    color: AppColors.primary),
+                title: const Text('My Created Hunts'),
+                subtitle: const Text('Manage & share your custom stories'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.push(RouteNames.studioMyHunts),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppDimensions.spaceL),
+
           // ── Completed hunts ───────────────────────────────────────────────
           if (state.completedHunts.isNotEmpty) ...[
             Padding(
