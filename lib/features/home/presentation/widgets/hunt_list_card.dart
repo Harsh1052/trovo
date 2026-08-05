@@ -33,20 +33,11 @@ class HuntListCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Row(
           children: [
-            if (hunt.coverImageUrl.isNotEmpty)
-              HMCachedImage(
-                url: hunt.coverImageUrl,
-                width: 90,
-                height: 90,
-              )
-            else
-              Container(
-                width: 90,
-                height: 90,
-                color: AppColors.primaryLight,
-                child: const Icon(Icons.explore_rounded,
-                    size: 36, color: Colors.white),
-              ),
+            HMCachedImage(
+              url: hunt.effectiveCoverImageUrl,
+              width: 90,
+              height: 90,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(AppDimensions.spaceM),

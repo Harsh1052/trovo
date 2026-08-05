@@ -89,6 +89,18 @@ class HuntModel extends Equatable {
   /// Convenience: whether this hunt has a valid cover image.
   bool get hasCoverImage => coverImageUrl.isNotEmpty;
 
+  /// Guaranteed cover image URL or local asset path.
+  String get effectiveCoverImageUrl {
+    if (coverImageUrl.trim().isNotEmpty) return coverImageUrl.trim();
+    return switch (huntId) {
+      'surat_diamond_heist' => 'assets/images/cover_surat.png',
+      'cubbon_park_emerald' => 'assets/images/cover_cubbon_park.png',
+      'panchvati_garden' => 'assets/images/cover_panchvati.png',
+      'sula_vineyards' => 'assets/images/cover_sula.png',
+      _ => 'assets/images/cover_surat.png',
+    };
+  }
+
   /// True when this hunt was created by a user / community creator.
   bool get isUgc => creatorUserId != null && creatorUserId!.isNotEmpty;
 

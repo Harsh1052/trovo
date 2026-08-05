@@ -281,7 +281,7 @@ class _ClueContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HMCachedImage(
-                      url: checkpoint.imageUrl ?? '',
+                      url: checkpoint.effectiveImageUrl,
                       width: double.infinity,
                       height: 180,
                       borderRadius:

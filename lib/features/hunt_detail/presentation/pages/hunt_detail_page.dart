@@ -74,7 +74,7 @@ class _HuntDetailContent extends StatelessWidget {
               title: Text(hunt.title,
                   style: AppTypography.titleMedium
                       .copyWith(color: Colors.white)),
-              background: HMCachedImage(url: hunt.coverImageUrl),
+              background: HMCachedImage(url: hunt.effectiveCoverImageUrl),
             ),
           ),
           SliverToBoxAdapter(

@@ -83,6 +83,31 @@ class CheckpointModel extends Equatable {
   /// True when a fun fact is available to show post-completion.
   bool get hasFunFact => funFact != null && funFact!.isNotEmpty;
 
+  /// Guaranteed checkpoint graphic URL or local asset path.
+  String get effectiveImageUrl {
+    if (imageUrl != null && imageUrl!.trim().isNotEmpty) {
+      return imageUrl!.trim();
+    }
+    return switch (checkpointId) {
+      'sdh_cp_01' => 'https://iili.io/CeP1QSf.jpg',
+      'sdh_cp_02' => 'https://iili.io/CePEes9.jpg',
+      'sdh_cp_03' => 'https://iili.io/CePESUb.jpg',
+      'sdh_cp_04' => 'https://iili.io/CePG2st.jpg',
+      'sdh_cp_05' => 'https://iili.io/CePGC7f.jpg',
+      'cpe_cp_01' => 'assets/images/cubbon_cp1_bamboo.png',
+      'cpe_cp_02' => 'assets/images/cubbon_cp2_red_memorial.png',
+      'cpe_cp_03' =>
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop',
+      'cpe_cp_04' =>
+        'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop',
+      'cpe_cp_05' =>
+        'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=800&auto=format&fit=crop',
+      'pg_cp_01' => 'assets/images/panchvati_cp1_ramkund.png',
+      'sv_cp_01' => 'assets/images/sula_cp1_vineyard.png',
+      _ => 'assets/images/cubbon_cp1_bamboo.png',
+    };
+  }
+
   /// Human-readable label for the checkpoint type, e.g. for accessibility
   /// or filter chips: "Clue" / "Photo Task".
   String get displayLabel => switch (type) {
